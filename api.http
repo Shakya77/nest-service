@@ -1,0 +1,101 @@
+@baseUrl = http://localhost:3001
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJpamFuZEBnbWFpbC5jb20iLCJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc0OTQ2MDg5fQ.RDb9V8di2kqobMlxWwYoKvAKf-1UGko9ogK-UVaM-Bo
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Bijan",
+  "email": "bijand@gmail.com",
+  "password": "123456",
+  "role": "admin"
+}
+
+#### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "bijand@gmail.com",
+  "password": "123456"
+}
+
+#### Get profile
+GET {{baseUrl}}/auth/admin-only
+Authorization : Bearer {{token}}
+
+
+#### Create Staff
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "staff",
+  "email": "staff21@gmail.com",
+  "password": "123456",
+  "role": "staff",
+  "isActive": true,
+  "rewardPoints": 0,
+  "licenseNumber": "123456",
+  "ratePerHr": 10
+}
+
+#### Create Vehicle
+POST {{baseUrl}}/vehicles
+Content-Type: application/json
+Authorization : Bearer {{token}}
+
+{
+  "name": "Sprinter Van",
+  "basePricePerKm": 100,
+  "registrationNo": "ABC-12343"
+}
+
+#### Update Vehicle
+PUT  {{baseUrl}}/vehicles/1
+Content-Type: application/json
+Authorization : Bearer {{token}}
+
+{
+  "basePricePerKm": 200
+}
+
+#### Get all Vehicles
+GET {{baseUrl}}/vehicles
+Content-Type: application/json
+Authorization : Bearer {{token}}
+
+#### Delete Vehicle
+DELETE  {{baseUrl}}/vehicles/1
+Content-Type: application/json
+Authorization : Bearer {{token}}
+
+#### Create Quote
+POST {{baseUrl}}/quotes
+Content-Type: application/json
+Authorization : Bearer {{token}}
+
+{
+  "clientId": 1,
+  "vehicleId": 1,
+  "bookingDate": "2022-05-25",
+  "requestedKm": 100,
+  "pickupLocation": "Bangalore",
+  "estimatedPrice": 100,
+  "status": "pending"
+}
+
+#### Get all Quotes
+GET {{baseUrl}}/quotes
+Content-Type: application/json
+
+#### Get Quote by Id
+GET {{baseUrl}}/quotes/1
+Content-Type: application/json
+
+#### Update Quote Status
+PATCH {{baseUrl}}/quotes/1/status
+Content-Type: application/json
+
+{
+  "status": "approved"
+}
