@@ -1,18 +1,17 @@
 import {
-  BelongsTo,
   Column,
   DataType,
   ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
-import { User } from 'src/users/entities/user.entity';
+import { Rental } from './rental.entity';
 
 @Table({
-  tableName: 'staff_details',
+  tableName: 'rental_distance_logs',
   paranoid: true,
 })
-export class StaffDetail extends Model<StaffDetail> {
+export class RentalDistanceLog extends Model<RentalDistanceLog> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -20,22 +19,19 @@ export class StaffDetail extends Model<StaffDetail> {
   })
   id: number;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => Rental)
   @Column({
     type: DataType.INTEGER,
   })
-  userId: number;
+  rentalId: number;
 
   @Column({
     type: DataType.DECIMAL(10, 2),
   })
-  ratePerHr: number;
+  addedKm: number;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.DATE,
   })
-  licenseNumber: string;
-
-  @BelongsTo(() => User)
-  user: User;
+  addedAt: Date;
 }

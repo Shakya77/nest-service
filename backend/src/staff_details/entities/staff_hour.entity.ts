@@ -7,45 +7,49 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Rental } from 'src/quotes/entities/rental.entity';
-import { User } from 'src/users/entities/user.entity';
 
 @Table({
-  tableName: 'payments',
+  tableName: 'staff_hours',
   paranoid: true,
 })
-export class Payment extends Model<Payment> {
+export class StaffHour extends Model<StaffHour> {
   @Column({
     type: DataType.INTEGER,
-    primaryKey: true,
     autoIncrement: true,
+    primaryKey: true,
   })
   id: number;
 
   @ForeignKey(() => Rental)
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
   })
-  rentalId: string;
+  rentalId: number;
 
   @BelongsTo(() => Rental)
   rental: Rental;
 
-  @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
+    allowNull: true,
   })
-  clientId: number;
-
-  @BelongsTo(() => User)
-  client: User;
+  staffId: number;
 
   @Column({
-    type: DataType.DECIMAL(10, 2),
+    type: DataType.TIME,
+    allowNull: true,
   })
-  amount: number;
+  startTime: Date;
+
+  @Column({
+    type: DataType.TIME,
+    allowNull: true,
+  })
+  endTime: Date;
 
   @Column({
     type: DataType.DATE,
+    allowNull: true,
   })
-  rewardPointsEarned: number;
+  totalHours: number;
 }

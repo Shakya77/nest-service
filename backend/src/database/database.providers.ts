@@ -1,7 +1,9 @@
 import { Sequelize } from 'sequelize-typescript';
+import { Payment } from 'src/payments/entities/payment.entity';
 import { Quote } from 'src/quotes/entities/quote.entity';
 import { Rental } from 'src/quotes/entities/rental.entity';
 import { StaffDetail } from 'src/staff_details/entities/staff_detail.entity';
+import { StaffHour } from 'src/staff_details/entities/staff_hour.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 
@@ -18,7 +20,15 @@ export const databaseProviders = [
         database: 'nest',
       });
 
-      sequelize.addModels([User, StaffDetail, Vehicle, Quote, Rental]);
+      sequelize.addModels([
+        User,
+        StaffDetail,
+        Vehicle,
+        Quote,
+        Rental,
+        Payment,
+        StaffHour,
+      ]);
 
       await sequelize.sync();
       return sequelize;
