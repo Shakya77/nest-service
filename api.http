@@ -80,7 +80,6 @@ Authorization : Bearer {{token}}
   "bookingDate": "2022-05-25",
   "requestedKm": 100,
   "pickupLocation": "Bangalore",
-  "estimatedPrice": 100,
   "status": "pending"
 }
 
@@ -97,5 +96,6 @@ PATCH {{baseUrl}}/quotes/1/status
 Content-Type: application/json
 
 {
-  "status": "approved"
+  "status": "approved",
+  "staffId": 2
 }

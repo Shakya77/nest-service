@@ -6,23 +6,52 @@ import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { Quote, QuoteStatus } from './entities/quote.entity';
 import { Rental } from './entities/rental.entity';
 import { Sequelize } from 'sequelize-typescript';
+import {
+  QUOTES_REPOSITORY,
+  RENTALS_REPOSITORY,
+  USERS_REPOSITORY,
+  VEHICLE_REPOSITORY,
+} from '../../constants';
 
 @Injectable()
 export class QuotesService {
   constructor(
-    @Inject('QUOTES_REPOSITORY')
+    @Inject(QUOTES_REPOSITORY)
     private quotesRepository: typeof Quote,
-    @Inject('RENTALS_REPOSITORY')
+    @Inject(RENTALS_REPOSITORY)
     private rentalsRepository: typeof Rental,
-    @Inject('USERS_REPOSITORY')
+    @Inject(USERS_REPOSITORY)
     private usersRepository: typeof User,
+    @Inject('SEQUELIZE')
     private readonly sequelize: Sequelize,
+    @Inject(VEHICLE_REPOSITORY)
+    private vehiclesRepository: typeof Vehicle,
   ) {}
 
   async create(createQuoteDto: CreateQuoteDto) {
-    const data = await this.quotesRepository.create(
-      createQuoteDto as unknown as Quote,
-    );
+    const validVehicle = await this.vehiclesRepository.findOne({
+      where: { id: createQuoteDto.vehicleId },
+    });
+
+    if (!validVehicle) {
+      throw new BadRequestException('Vehicle not found');
+    }
+
+    const validClient = await this.usersRepository.findOne({
+      where: { id: createQuoteDto.clientId },
+    });
+
+    if (!validClient) {
+      throw new BadRequestException('Client not found');
+    }
+
+    const estimatedPrice =
+      validVehicle.basePricePerKm * createQuoteDto.requestedKm;
+
+    const data = await this.quotesRepository.create({
+      ...createQuoteDto,
+      estimatedPrice,
+    } as unknown as Quote);
 
     return data;
   }
@@ -87,53 +116,60 @@ export class QuotesService {
   }
 
   async updateStatus(id: number, status: string, staffId: number) {
-    const check = await this.quotesRepository.findOne({ where: { id } });
-
-    if (!check) {
-      throw new BadRequestException('Quote not found');
-    }
-
-    if (
-      check.status === QuoteStatus.APPROVED ||
-      check.status === QuoteStatus.REJECTED
-    ) {
-      throw new BadRequestException('Quote already approved or rejected');
-    }
-
-    // const validStaff = await this.usersRepository.findOne({
-    //   where: { role: Roles.STAFF, id: staffId },
-    // });
-
-    // if (!validStaff) {
-    //   throw new BadRequestException('Staff not found');
-    // }
-
     const transaction = await this.sequelize.transaction();
-    var data;
+
     try {
-      data = await this.quotesRepository.update(
+      const check = await this.quotesRepository.findOne({
+        where: { id },
+      });
+
+      if (!check) {
+        throw new BadRequestException('Quote not found');
+      }
+
+      if (
+        check.status === QuoteStatus.APPROVED ||
+        check.status === QuoteStatus.REJECTED
+      ) {
+        throw new BadRequestException('Quote already approved or rejected');
+      }
+
+      const validStaff = await this.usersRepository.findOne({
+        where: { role: Roles.STAFF, id: staffId },
+      });
+
+      if (!validStaff) {
+        throw new BadRequestException('Staff not found');
+      }
+
+      await this.quotesRepository.update(
         { status: status as QuoteStatus },
         {
           where: { id },
+          transaction,
         },
       );
 
       if (status === QuoteStatus.APPROVED) {
-        await this.rentalsRepository.create({
-          quoteId: id,
-          scheduleDate: check.bookingDate,
-          totalPrice: check.estimatedPrice,
-          plannedKm: check.requestedKm,
-          vehicleId: check.vehicleId,
-          staffId: staffId,
-        } as unknown as Rental);
+        await this.rentalsRepository.create(
+          {
+            quoteId: id,
+            scheduleDate: check.bookingDate,
+            totalPrice: check.estimatedPrice,
+            plannedKm: check.requestedKm,
+            vehicleId: check.vehicleId,
+            staffId: staffId,
+          } as unknown as Rental,
+          { transaction },
+        );
       }
-    } catch (error) {
-      throw new BadRequestException('Failed to update quote status');
-    } finally {
-      await transaction.commit();
-    }
 
-    return data;
+      await transaction.commit();
+
+      return { message: 'Quote status updated successfully' };
+    } catch (error) {
+      await transaction.rollback();
+      throw new BadRequestException(error.message || 'Transaction failed');
+    }
   }
 }

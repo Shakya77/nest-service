@@ -9,6 +9,6 @@ import { StaffDetailsModule } from 'src/staff_details/staff_details.module';
   imports: [DatabaseModule, StaffDetailsModule],
   controllers: [UsersController],
   providers: [UsersService, ...usersProviders],
-  exports: [UsersService],
+  exports: [UsersService, ...usersProviders],
 })
 export class UsersModule {}
