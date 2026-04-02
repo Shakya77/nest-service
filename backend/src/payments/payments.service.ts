@@ -1,26 +1,89 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { PAYMENTS_REPOSITORY } from '../../constants';
+import { Payment } from './entities/payment.entity';
 
 @Injectable()
 export class PaymentsService {
-  create(createPaymentDto: CreatePaymentDto) {
-    return 'This action adds a new payment';
+  constructor(
+    @Inject(PAYMENTS_REPOSITORY)
+    private paymentsRepository: typeof Payment,
+  ) {}
+
+  async create(createPaymentDto: CreatePaymentDto) {
+    const data = await this.paymentsRepository.create({
+      ...createPaymentDto,
+      paidAt: createPaymentDto.paidAt
+        ? new Date(createPaymentDto.paidAt)
+        : new Date(),
+      rewardPointsUsed: createPaymentDto.rewardPointsUsed ?? 0,
+      rewardPointsEarned: createPaymentDto.rewardPointsEarned ?? 0,
+      paymentMethod: createPaymentDto.paymentMethod ?? 'cash',
+    } as Payment);
+
+    return data;
   }
 
-  findAll() {
-    return `This action returns all payments`;
+  async findAll() {
+    return await this.paymentsRepository.findAll({
+      include: [
+        {
+          association: 'rental',
+          attributes: ['id', 'quoteId', 'status', 'scheduleDate'],
+        },
+        {
+          association: 'client',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+      order: [['id', 'DESC']],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
+  async findOne(id: number) {
+    return await this.findPaymentById(id);
   }
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
+  async update(id: number, updatePaymentDto: UpdatePaymentDto) {
+    const payment = await this.findPaymentById(id);
+
+    await payment.update({
+      ...updatePaymentDto,
+      paidAt: updatePaymentDto.paidAt
+        ? new Date(updatePaymentDto.paidAt)
+        : payment.paidAt,
+    });
+
+    return await this.findPaymentById(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
+  async remove(id: number) {
+    const payment = await this.findPaymentById(id);
+    await payment.destroy();
+
+    return { message: 'Payment deleted successfully' };
+  }
+
+  private async findPaymentById(id: number) {
+    const payment = await this.paymentsRepository.findOne({
+      where: { id },
+      include: [
+        {
+          association: 'rental',
+          attributes: ['id', 'quoteId', 'status', 'scheduleDate'],
+        },
+        {
+          association: 'client',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+    });
+
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    return payment;
   }
 }
