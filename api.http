@@ -99,3 +99,14 @@ Content-Type: application/json
   "status": "approved",
   "staffId": 2
 }
+
+###
+GET {{baseUrl}}/users
+Content-Type: application/json
+Authorization : Bearer {{token}}
+
+{
+  "search": "bijan",
+  "page": 1,
+  "limit": 10
+}

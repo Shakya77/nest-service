@@ -1,13 +1,13 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { Roles, User } from './entities/user.entity';
 import { USERS_REPOSITORY } from '../../constants';
 import * as bcrypt from 'bcryptjs';
 import { StaffDetailsService } from 'src/staff_details/staff_details.service';
 import { Sequelize } from 'sequelize-typescript';
 import { Op, Transaction } from 'sequelize';
-import slugify from "slugify";
+import slugify from 'slugify';
 
 @Injectable()
 export class UsersService {
@@ -64,20 +64,20 @@ export class UsersService {
     }
   }
 
-  async findAll(page: number = 1, limit: number = 10, search?: string) {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    userId?: number,
+  ) {
     const offset = (page - 1) * limit;
 
-    const whereCondition = search
-      ? {
-          [Op.or]: [
-            { name: { [Op.iLike]: `%${search}%` } },
-            { email: { [Op.iLike]: `%${search}%` } },
-          ],
-        }
-      : {};
-
     const { rows, count } = await this.usersRepository.findAndCountAll({
-      where: whereCondition,
+      where: {
+        id: { [Op.ne]: userId },
+        role: { [Op.ne]: Roles.ADMIN },
+        isActive: true,
+      },
       limit,
       offset,
       order: [['createdAt', 'DESC']],

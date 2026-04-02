@@ -7,10 +7,16 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AllowedRoles } from 'src/auth/decorators/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -24,8 +30,16 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  async findAll(
+    @Request() req,
+    @Body('page') page: number,
+    @Body('limit') limit: number,
+    @Body('search') search: string,
+  ) {
+    const userId = req.user.id;
+    return await this.usersService.findAll(page, limit, search, userId);
   }
 
   // @Get(':id')
