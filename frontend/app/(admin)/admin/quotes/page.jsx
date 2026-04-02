@@ -60,7 +60,7 @@ export default function page() {
 
   const updateStatus = async (id, status, staffId) => {
     try {
-      await api.put(`/quotes/${id}/status`, { status, staffId });
+      await api.patch(`/quotes/${id}/status`, { status, staffId });
       await fetchQuotes();
       message.success("Status updated");
     } catch (err) {

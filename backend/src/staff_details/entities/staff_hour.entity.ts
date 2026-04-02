@@ -44,13 +44,13 @@ export class StaffHour extends Model<StaffHour> {
   staff: User;
 
   @Column({
-    type: DataType.TIME,
+    type: DataType.DATE,
     allowNull: true,
   })
   startTime: Date;
 
   @Column({
-    type: DataType.TIME,
+    type: DataType.DATE,
     allowNull: true,
   })
   endTime: Date;

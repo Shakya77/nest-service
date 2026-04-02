@@ -52,6 +52,30 @@ export class UsersController {
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('staff/:id')
+  async getStaff(@Param('id') id: string) {
+    return this.usersService.getStaff(+id);
+  }
+
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Patch('staff/:id')
+  async updateStaff(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.updateStaff(+id, updateUserDto);
+  }
+
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete('staff/:id')
+  async deleteStaff(@Param('id') id: string) {
+    return this.usersService.deleteStaff(+id);
+  }
+
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get()
   async findAll(
     @Request() req,

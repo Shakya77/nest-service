@@ -125,7 +125,7 @@ export default function page() {
           : null,
       };
       if (method === "edit" && activeQuote) {
-        await api.put(`/quotes/${activeQuote.id}`, payload);
+        await api.patch(`/quotes/${activeQuote.id}`, payload);
         message.success("Quote updated");
       } else {
         await api.post("/quotes", payload);

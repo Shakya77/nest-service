@@ -213,4 +213,112 @@ export class UsersService {
 
     return data;
   }
+
+  async getStaff(id: number) {
+    const staff = await this.usersRepository.findOne({
+      where: { id, role: Roles.STAFF },
+      attributes: ['id', 'name', 'email', 'isActive'],
+      include: [
+        {
+          model: StaffDetail,
+          as: 'staffDetail',
+          attributes: ['ratePerHr', 'licenseNumber'],
+        },
+      ],
+    });
+
+    if (!staff) {
+      throw new BadRequestException('Staff not found');
+    }
+
+    return {
+      id: staff.id,
+      name: staff.name,
+      email: staff.email,
+      isActive: staff.isActive,
+      ratePerHr: (staff as any).staffDetail?.ratePerHr,
+      licenseNumber: (staff as any).staffDetail?.licenseNumber,
+    };
+  }
+
+  async updateStaff(id: number, updateUserDto: UpdateUserDto) {
+    const transaction: Transaction = await this.sequelize.transaction();
+
+    try {
+      const staff = await this.usersRepository.findOne({
+        where: { id, role: Roles.STAFF },
+        transaction,
+      });
+
+      if (!staff) {
+        throw new BadRequestException('Staff not found');
+      }
+
+      // Update user data
+      const userData: any = {};
+      if (updateUserDto.name) userData.name = updateUserDto.name;
+      if (updateUserDto.email) userData.email = updateUserDto.email;
+      if (updateUserDto.password) {
+        userData.password = await bcrypt.hash(updateUserDto.password, 10);
+      }
+
+      if (Object.keys(userData).length > 0) {
+        await staff.update(userData, { transaction });
+      }
+
+      // Update staff details
+      if (updateUserDto.ratePerHr || updateUserDto.licenseNumber) {
+        const staffDetail = await StaffDetail.findOne({
+          where: { userId: id },
+          transaction,
+        });
+
+        if (staffDetail) {
+          const detailData: any = {};
+          if (updateUserDto.ratePerHr)
+            detailData.ratePerHr = updateUserDto.ratePerHr;
+          if (updateUserDto.licenseNumber)
+            detailData.licenseNumber = updateUserDto.licenseNumber;
+
+          await staffDetail.update(detailData, { transaction });
+        }
+      }
+
+      await transaction.commit();
+      return { message: 'Staff updated successfully' };
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
+
+  async deleteStaff(id: number) {
+    const transaction: Transaction = await this.sequelize.transaction();
+
+    try {
+      const staff = await this.usersRepository.findOne({
+        where: { id, role: Roles.STAFF },
+        transaction,
+      });
+
+      if (!staff) {
+        throw new BadRequestException('Staff not found');
+      }
+
+      // Delete staff details first
+      await StaffDetail.destroy({
+        where: { userId: id },
+        transaction,
+      });
+
+      // Then delete the user
+      await staff.destroy({ transaction });
+
+      await transaction.commit();
+      return { message: 'Staff deleted successfully' };
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
 }

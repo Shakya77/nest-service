@@ -106,7 +106,7 @@ export default function page() {
           <Button
             type="text"
             icon={<EditOutlined />}
-            onClick={() => openEdit(record.id)}
+            onClick={() => openEdit(record.user.id)}
           />
           <Popconfirm
             title="Delete this staff?"
@@ -149,6 +149,7 @@ export default function page() {
   };
 
   const openEdit = async (id) => {
+    console.log(id);
     setModal(true);
     setMethod("edit");
     setId(id);
