@@ -23,6 +23,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (check.isActive === false) {
+      throw new UnauthorizedException(
+        'Account is inactive. Please contact admin.',
+      );
+    }
+
     const payload = {
       email: check.email,
       id: check.id,

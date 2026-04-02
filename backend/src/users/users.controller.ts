@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Body,
+  Query,
   Patch,
   Param,
   Delete,
@@ -34,12 +35,17 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   async findAll(
     @Request() req,
-    @Body('page') page: number,
-    @Body('limit') limit: number,
-    @Body('search') search: string,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('role') role: string,
   ) {
     const userId = req.user.id;
-    return await this.usersService.findAll(page, limit, search, userId);
+    return await this.usersService.findAll(
+      Number(page) || 1,
+      Number(limit) || 10,
+      role,
+      userId,
+    );
   }
 
   // @Get(':id')

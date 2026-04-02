@@ -1,6 +1,5 @@
 @baseUrl = http://localhost:3001
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJpamFuZEBnbWFpbC5jb20iLCJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc0OTQ2MDg5fQ.RDb9V8di2kqobMlxWwYoKvAKf-1UGko9ogK-UVaM-Bo
-POST {{baseUrl}}/users
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJpamFuc2hha3lhMTQ1QGdtYWlsLmNvbSIsImlkIjoxLCJyb2xlIjoiYWRtaW4iLCJzbHVnIjoiQmlqYW4tU2hha3lhIiwiaWF0IjoxNzc1MTUxNTQ0fQ.vHK60E02f5WtpBPqbuBGE54Dqa9FybkIuasoFP2mrYo
 Content-Type: application/json
 
 {
@@ -103,10 +102,4 @@ Content-Type: application/json
 ###
 GET {{baseUrl}}/users
 Content-Type: application/json
-Authorization : Bearer {{token}}
-
-{
-  "search": "bijan",
-  "page": 1,
-  "limit": 10
-}
+Authorization: Bearer {{token}}
