@@ -2,6 +2,8 @@ import { Sequelize } from 'sequelize-typescript';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { Quote } from 'src/quotes/entities/quote.entity';
 import { Rental } from 'src/quotes/entities/rental.entity';
+import { RentalDistanceLog } from 'src/quotes/entities/rental_distance_log.entity';
+import { RentalStaffHour } from 'src/quotes/entities/rental_staff_hour.entity';
 import { StaffDetail } from 'src/staff_details/entities/staff_detail.entity';
 import { StaffHour } from 'src/staff_details/entities/staff_hour.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -28,6 +30,8 @@ export const databaseProviders = [
         Rental,
         Payment,
         StaffHour,
+        RentalDistanceLog,
+        RentalStaffHour,
       ]);
 
       await sequelize.sync();

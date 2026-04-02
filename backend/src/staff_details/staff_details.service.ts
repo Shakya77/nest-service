@@ -19,7 +19,7 @@ export class StaffDetailsService {
     const data = await this.staffDetailsRepository.create(
       {
         ...createStaffDetailDto,
-      },
+      } as any as StaffDetail,
       { transaction },
     );
 

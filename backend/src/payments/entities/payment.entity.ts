@@ -23,9 +23,9 @@ export class Payment extends Model<Payment> {
 
   @ForeignKey(() => Rental)
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
   })
-  rentalId: string;
+  rentalId: number;
 
   @BelongsTo(() => Rental)
   rental: Rental;
