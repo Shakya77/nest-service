@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { Button, Card, Col, Row, Table, Tag, Typography, message } from "antd";
+import { Button, Card, Space, Table, Tag, Typography, message } from "antd";
 import api from "@/lib/api";
 
 const { Title, Text } = Typography;
@@ -35,7 +35,7 @@ export default function page() {
 
   const columns = [
     {
-      title: "Rental",
+      title: "Rental ID",
       dataIndex: "id",
       key: "id",
     },
@@ -53,7 +53,7 @@ export default function page() {
       title: "Staff",
       dataIndex: "staffName",
       key: "staffName",
-      render: (value, record) => value || record.staffEmail || "-",
+      render: (value) => value || "Not assigned",
     },
     {
       title: "Scheduled",
@@ -61,22 +61,6 @@ export default function page() {
       key: "scheduledDate",
       render: (value) =>
         value ? dayjs(value).format("MMM D, YYYY h:mm A") : "-",
-    },
-    {
-      title: "Planned Km",
-      dataIndex: "plannedKm",
-      key: "plannedKm",
-    },
-    {
-      title: "Extra Km",
-      dataIndex: "extraKm",
-      key: "extraKm",
-    },
-    {
-      title: "Total Price",
-      dataIndex: "totalPrice",
-      key: "totalPrice",
-      render: (value) => (value ? Number(value).toFixed(2) : "0.00"),
     },
     {
       title: "Total Cost",
@@ -97,20 +81,18 @@ export default function page() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card variant="borderless">
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={3}>Rentals Report</Title>
+        <Space
+          style={{ width: "100%", justifyContent: "space-between" }}
+          align="start"
+        >
+          <div>
+            <Title level={3}>Rentals</Title>
             <Text type="secondary">
-              Track assigned rentals, staff activity, and total charges.
+              Simple rental list with current status.
             </Text>
-          </Col>
-
-          <Col>
-            <div style={{ marginTop: 16 }}>
-              <Button onClick={fetchRentals}>Refresh</Button>
-            </div>
-          </Col>
-        </Row>
+          </div>
+          <Button onClick={fetchRentals}>Refresh</Button>
+        </Space>
       </Card>
       <Card variant="borderless">
         <Table

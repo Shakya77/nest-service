@@ -48,7 +48,7 @@ export default function ClientLayout({ children }) {
       router.replace("/login");
       return;
     }
-    if (user.role !== "client") {
+    if (user.role !== "user") {
       router.replace(dashboardForRole(user.role));
     }
   }, [loading, user, router]);

@@ -5,10 +5,8 @@ import dayjs from "dayjs";
 import {
   Button,
   Card,
-  Col,
   InputNumber,
   Modal,
-  Row,
   Select,
   Space,
   Table,
@@ -31,8 +29,8 @@ export default function page() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [extraModalOpen, setExtraModalOpen] = useState(false);
-  const [extraKm, setExtraKm] = useState(0);
   const [activeRental, setActiveRental] = useState(null);
+  const [extraKm, setExtraKm] = useState(0);
   const [endModalOpen, setEndModalOpen] = useState(false);
   const [endingRental, setEndingRental] = useState(null);
   const [rewardPointsUsed, setRewardPointsUsed] = useState(0);
@@ -57,39 +55,14 @@ export default function page() {
   const handleStart = async (rentalId) => {
     setActionLoading(true);
     try {
-      await api.post(`/rentals/${rentalId}/start`);
-      message.success("Rental started");
+      const { data } = await api.post(`/rentals/${rentalId}/start`);
+      message.success(data?.message || "Rental started");
       await fetchRentals();
     } catch (err) {
-      message.error("Failed to start rental");
+      message.error(err?.response?.data?.message || "Failed to start rental");
     } finally {
       setActionLoading(false);
     }
-  };
-
-  const handleEnd = async (rentalId) => {
-    setActionLoading(true);
-    try {
-      await api.post(`/rentals/${rentalId}/end`, {
-        rewardPointsUsed,
-        paymentMethod,
-      });
-      message.success("Rental completed");
-      await fetchRentals();
-    } catch (err) {
-      message.error(
-        err?.response?.data?.message || "Failed to complete rental",
-      );
-    } finally {
-      setActionLoading(false);
-      setEndModalOpen(false);
-    }
-  };
-
-  const openExtraModal = (rental) => {
-    setActiveRental(rental);
-    setExtraKm(0);
-    setExtraModalOpen(true);
   };
 
   const openEndModal = (rental) => {
@@ -99,7 +72,30 @@ export default function page() {
     setEndModalOpen(true);
   };
 
-  const handleExtraSubmit = async () => {
+  const handleEnd = async (rentalId) => {
+    setActionLoading(true);
+    try {
+      const { data } = await api.post(`/rentals/${rentalId}/end`, {
+        rewardPointsUsed: Number(rewardPointsUsed || 0),
+        paymentMethod,
+      });
+      message.success(data?.message || "Rental completed");
+      setEndModalOpen(false);
+      await fetchRentals();
+    } catch (err) {
+      message.error(err?.response?.data?.message || "Failed to end rental");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openExtraModal = (rental) => {
+    setActiveRental(rental);
+    setExtraKm(0);
+    setExtraModalOpen(true);
+  };
+
+  const submitExtraKm = async () => {
     if (!activeRental) return;
     if (!extraKm || Number(extraKm) <= 0) {
       message.error("Extra km must be greater than 0");
@@ -108,18 +104,25 @@ export default function page() {
 
     setActionLoading(true);
     try {
-      await api.post(`/rentals/${activeRental.id}/extra`, { addedKm: extraKm });
-      message.success("Extra km logged");
+      const { data } = await api.post(`/rentals/${activeRental.id}/extra`, {
+        addedKm: Number(extraKm),
+      });
+      message.success(data?.message || "Extra km added");
       setExtraModalOpen(false);
       await fetchRentals();
     } catch (err) {
-      message.error("Failed to log extra km");
+      message.error(err?.response?.data?.message || "Failed to add extra km");
     } finally {
       setActionLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "Rental ID",
+      dataIndex: "id",
+      key: "id",
+    },
     {
       title: "Vehicle",
       dataIndex: "vehicleName",
@@ -199,19 +202,16 @@ export default function page() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card>
-        <Row justify="space-between" align="middle">
-          <Col>
+        <Space
+          style={{ width: "100%", justifyContent: "space-between" }}
+          align="start"
+        >
+          <div>
             <Title level={3}>Staff Dashboard</Title>
-            <Text type="secondary">
-              Review assigned rentals, start/end trips, and log extra distance.
-            </Text>
-          </Col>
-          <Col>
-            <div style={{ marginTop: 16 }}>
-              <Button onClick={fetchRentals}>Refresh</Button>
-            </div>
-          </Col>
-        </Row>
+            <Text type="secondary">Simple list of your assigned rentals.</Text>
+          </div>
+          <Button onClick={fetchRentals}>Refresh</Button>
+        </Space>
       </Card>
 
       <Card>
@@ -226,14 +226,14 @@ export default function page() {
       </Card>
 
       <Modal
-        title="Log Extra Distance"
+        title="Add Extra Km"
         open={extraModalOpen}
-        onOk={handleExtraSubmit}
+        onOk={submitExtraKm}
         onCancel={() => setExtraModalOpen(false)}
         okButtonProps={{ loading: actionLoading }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <Text>Extra kilometers driven for this rental.</Text>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <Text>Enter additional kilometers for this ride.</Text>
           <InputNumber
             min={1}
             value={extraKm}
@@ -244,7 +244,7 @@ export default function page() {
       </Modal>
 
       <Modal
-        title="Complete Rental"
+        title="End Ride"
         open={endModalOpen}
         onOk={() => endingRental && handleEnd(endingRental.id)}
         onCancel={() => setEndModalOpen(false)}
@@ -255,12 +255,12 @@ export default function page() {
             Available reward points: {endingRental?.clientRewardPoints ?? 0}
           </Text>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <Text>Reward points to use</Text>
+            <Text>Reward points used</Text>
             <InputNumber
               min={0}
               max={Number(endingRental?.clientRewardPoints ?? 0)}
               value={rewardPointsUsed}
-              onChange={setRewardPointsUsed}
+              onChange={(value) => setRewardPointsUsed(value || 0)}
               style={{ width: "100%" }}
             />
           </div>
