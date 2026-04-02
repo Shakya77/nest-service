@@ -1,14 +1,11 @@
-import { IsDate, IsNumber, IsString } from 'class-validator';
-import { QuoteStatus } from '../entities/quote.entity';
+import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateQuoteDto {
   @IsNumber()
-  clientId: number;
-  @IsNumber()
   vehicleId: number;
 
-  @IsDate()
-  bookingDate: Date;
+  @IsDateString()
+  bookingDate: string;
 
   @IsNumber()
   requestedKm: number;
@@ -16,9 +13,7 @@ export class CreateQuoteDto {
   @IsString()
   pickupLocation: string;
 
-  @IsNumber()
-  estimatedPrice: number;
-
+  @IsOptional()
   @IsString()
-  status: QuoteStatus;
+  status?: string;
 }

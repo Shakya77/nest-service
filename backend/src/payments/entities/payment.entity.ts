@@ -45,7 +45,26 @@ export class Payment extends Model<Payment> {
   amount: number;
 
   @Column({
-    type: DataType.DATE,
+    type: DataType.INTEGER,
+    defaultValue: 0,
+  })
+  rewardPointsUsed: number;
+
+  @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0,
   })
   rewardPointsEarned: number;
+
+  @Column({
+    type: DataType.STRING,
+    defaultValue: 'cash',
+  })
+  paymentMethod: string;
+
+  @Column({
+    type: DataType.DATE,
+    defaultValue: DataType.NOW,
+  })
+  paidAt: Date;
 }

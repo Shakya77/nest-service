@@ -57,8 +57,8 @@ export default function ClientLayout({ children }) {
 
   const menuItems = [
     getItem(
-      <Link href={`/client/${user?.slug}/dashboard`}>Dashboard</Link>,
-      `/client/${user?.slug}/dashboard`,
+      <Link href={`/client/dashboard`}>Dashboard</Link>,
+      `/client/dashboard`,
       <PieChartOutlined />,
     ),
     getItem(

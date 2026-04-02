@@ -26,7 +26,7 @@ function decodeToken(token) {
 export function dashboardForRole(role, slug) {
   if (role === "admin") return "/admin";
   if (role === "staff") return "/staff";
-  if (role === "user") return `/client/${slug}/dashboard`;
+  if (role === "user") return `/client/dashboard`;
   return "/";
 }
 

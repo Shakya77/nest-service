@@ -6,8 +6,10 @@ import { USERS_REPOSITORY } from '../../constants';
 import * as bcrypt from 'bcryptjs';
 import { StaffDetailsService } from 'src/staff_details/staff_details.service';
 import { Sequelize } from 'sequelize-typescript';
-import { Op, Transaction } from 'sequelize';
+import { Op, Transaction, fn, col } from 'sequelize';
 import slugify from 'slugify';
+import { StaffDetail } from 'src/staff_details/entities/staff_detail.entity';
+import { StaffHour } from 'src/staff_details/entities/staff_hour.entity';
 
 @Injectable()
 export class UsersService {
@@ -64,6 +66,14 @@ export class UsersService {
     }
   }
 
+  async createStaff(createUserDto: CreateUserDto) {
+    return this.create({
+      ...createUserDto,
+      role: Roles.STAFF,
+      isActive: createUserDto.isActive ?? true,
+    });
+  }
+
   async findAll(
     page: number = 1,
     limit: number = 10,
@@ -92,6 +102,77 @@ export class UsersService {
         lastPage: Math.ceil(count / limit),
       },
     };
+  }
+
+  async listStaff() {
+    const staff = await this.usersRepository.findAll({
+      where: { role: Roles.STAFF },
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'isActive',
+        'rewardPoints',
+        [fn('SUM', col('staffHours.totalHours')), 'totalHours'],
+      ],
+      include: [
+        {
+          model: StaffDetail,
+          as: 'staffDetail',
+          attributes: ['ratePerHr', 'licenseNumber'],
+        },
+        {
+          model: StaffHour,
+          as: 'staffHours',
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['User.id', 'staffDetail.id'],
+      order: [['id', 'DESC']],
+      raw: true,
+      nest: true,
+    });
+
+    return staff.map((item: any) => {
+      const totalHours = Number(item.totalHours || 0);
+      const hourlyRate = Number(item.staffDetail?.ratePerHr || 0);
+
+      return {
+        ...item,
+        user: {
+          id: item.id,
+          name: item.name,
+          email: item.email,
+          isActive: item.isActive,
+        },
+        ratePerHr: hourlyRate,
+        hourlyRate,
+        totalHours,
+        totalIncome: totalHours * hourlyRate,
+      };
+    });
+  }
+
+  async getMe(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'isActive',
+        'rewardPoints',
+        'slug',
+      ],
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    return user;
   }
 
   async findOne(id: number) {

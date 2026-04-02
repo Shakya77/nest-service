@@ -69,7 +69,7 @@ export default function page() {
   useEffect(() => {
     fetchData();
   }, []);
-
+  console.log(vehicles, quotes);
   useEffect(() => {
     const fetchDisabledDates = async () => {
       if (!vehicleId) {

@@ -19,11 +19,22 @@ import { AllowedRoles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from './entities/user.entity';
 
-@AllowedRoles(Roles.ADMIN)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getMe(@Request() req) {
+    return this.usersService.getMe(req.user.id);
+  }
+
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('staff')
+  listStaff() {
+    return this.usersService.listStaff();
+  }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
@@ -32,6 +43,15 @@ export class UsersController {
     return user;
   }
 
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post('staff')
+  async createStaff(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.createStaff(createUserDto);
+  }
+
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get()
   async findAll(
     @Request() req,
@@ -53,16 +73,22 @@ export class UsersController {
   //   return this.usersService.findOne(+id);
   // }
 
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
 
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('/:role/:id')
   async changeStatus(
     @Param('id') id: string,

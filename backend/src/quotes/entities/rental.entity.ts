@@ -11,8 +11,8 @@ import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export enum RentalStatus {
-  Pending = 'pending',
-  INPROGRESS = 'in-progress',
+  ASSIGNED = 'assigned',
+  INPROGRESS = 'in_progress',
   COMPLETED = 'completed',
 }
 
@@ -89,7 +89,7 @@ export class Rental extends Model<Rental> {
 
   @Column({
     type: DataType.ENUM(...Object.values(RentalStatus)),
-    defaultValue: RentalStatus.Pending,
+    defaultValue: RentalStatus.ASSIGNED,
   })
   status: RentalStatus;
 }

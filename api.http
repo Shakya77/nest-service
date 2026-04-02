@@ -108,3 +108,8 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/users/staff
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get all vehicles
+GET {{baseUrl}}/vehicles
+Content-Type: application/json
+Authorization: Bearer {{token}}

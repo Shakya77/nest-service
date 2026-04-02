@@ -1,10 +1,15 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
 import { Roles, User } from 'src/users/entities/user.entity';
 import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { Quote, QuoteStatus } from './entities/quote.entity';
-import { Rental } from './entities/rental.entity';
+import { Rental, RentalStatus } from './entities/rental.entity';
 import { Sequelize } from 'sequelize-typescript';
 import {
   QUOTES_REPOSITORY,
@@ -12,6 +17,7 @@ import {
   USERS_REPOSITORY,
   VEHICLE_REPOSITORY,
 } from '../../constants';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class QuotesService {
@@ -28,7 +34,33 @@ export class QuotesService {
     private vehiclesRepository: typeof Vehicle,
   ) {}
 
+  private formatQuote(quote: any) {
+    const client = quote.client || {};
+    const vehicle = quote.vehicles || quote.vehicle || {};
+
+    return {
+      id: quote.id,
+      clientId: quote.clientId,
+      clientName: client.name,
+      clientEmail: client.email,
+      vehicleId: quote.vehicleId,
+      vehicleName: vehicle.name,
+      vehicleBasePricePerKm: vehicle.basePricePerKm,
+      vehicleRegistrationNo: vehicle.registrationNo,
+      requestedKm: quote.requestedKm,
+      estimatedPrice: quote.estimatedPrice,
+      bookingDate: quote.bookingDate,
+      pickupLocation: quote.pickupLocation,
+      status: quote.status,
+      createdAt: quote.createdAt,
+    };
+  }
+
   async create(createQuoteDto: CreateQuoteDto) {
+    throw new BadRequestException('Use createForClient with client id');
+  }
+
+  async createForClient(createQuoteDto: CreateQuoteDto, clientId: number) {
     const validVehicle = await this.vehiclesRepository.findOne({
       where: { id: createQuoteDto.vehicleId },
     });
@@ -37,40 +69,67 @@ export class QuotesService {
       throw new BadRequestException('Vehicle not found');
     }
 
-    const validClient = await this.usersRepository.findOne({
-      where: { id: createQuoteDto.clientId },
-    });
-
-    if (!validClient) {
-      throw new BadRequestException('Client not found');
-    }
-
     const estimatedPrice =
-      validVehicle.basePricePerKm * createQuoteDto.requestedKm;
+      Number(validVehicle.basePricePerKm) * Number(createQuoteDto.requestedKm);
 
-    const data = await this.quotesRepository.create({
-      ...createQuoteDto,
+    return await this.quotesRepository.create({
+      clientId,
+      vehicleId: createQuoteDto.vehicleId,
+      requestedKm: createQuoteDto.requestedKm,
+      bookingDate: createQuoteDto.bookingDate,
+      pickupLocation: createQuoteDto.pickupLocation,
       estimatedPrice,
+      status: QuoteStatus.PENDING,
     } as unknown as Quote);
-
-    return data;
   }
 
-  async findAll() {
-    const data = await this.quotesRepository.findAll({
-      attributes: [
-        'id',
-        'bookingDate',
-        'requestedKm',
-        'pickupLocation',
-        'estimatedPrice',
-        'status',
-        'createdAt',
-      ],
+  async findAllAdmin() {
+    const quotes = await this.quotesRepository.findAll({
       include: [
         {
           model: User,
           attributes: ['id', 'name', 'email'],
+          as: 'client',
+        },
+        {
+          model: Vehicle,
+          attributes: ['id', 'name', 'basePricePerKm', 'registrationNo'],
+        },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    return quotes.map((quote) => this.formatQuote(quote as any));
+  }
+
+  async findAllClient(clientId: number) {
+    const quotes = await this.quotesRepository.findAll({
+      where: { clientId },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'name', 'email'],
+          as: 'client',
+        },
+        {
+          model: Vehicle,
+          attributes: ['id', 'name', 'basePricePerKm', 'registrationNo'],
+        },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    return quotes.map((quote) => this.formatQuote(quote as any));
+  }
+
+  async findOne(id: number) {
+    const data = await this.quotesRepository.findOne({
+      where: { id },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'name', 'email'],
+          as: 'client',
         },
         {
           model: Vehicle,
@@ -79,35 +138,68 @@ export class QuotesService {
       ],
     });
 
-    return data;
+    return data ? this.formatQuote(data as any) : null;
   }
 
-  async findOne(id: number) {
-    const data = await this.quotesRepository.findOne({
-      where: { id },
-      include: ['vehicles', 'client'],
+  async update(id: number, updateQuoteDto: UpdateQuoteDto, clientId: number) {
+    const check = await this.quotesRepository.findOne({
+      where: { id, clientId },
     });
-    return data;
-  }
-
-  async update(id: number, updateQuoteDto: UpdateQuoteDto) {
-    const check = await this.quotesRepository.findOne({ where: { id } });
 
     if (!check) {
       throw new BadRequestException('Quote not found');
     }
 
-    const data = await this.quotesRepository.update(updateQuoteDto, {
-      where: { id },
+    if (check.status !== QuoteStatus.PENDING) {
+      throw new BadRequestException('Only pending quotes can be updated');
+    }
+
+    let estimatedPrice: number | undefined;
+    if (
+      updateQuoteDto.vehicleId !== undefined ||
+      updateQuoteDto.requestedKm !== undefined
+    ) {
+      const nextVehicleId = updateQuoteDto.vehicleId ?? check.vehicleId;
+      const nextRequestedKm = updateQuoteDto.requestedKm ?? check.requestedKm;
+
+      const vehicle = await this.vehiclesRepository.findOne({
+        where: { id: nextVehicleId },
+      });
+
+      if (!vehicle) {
+        throw new BadRequestException('Vehicle not found');
+      }
+
+      estimatedPrice = Number(vehicle.basePricePerKm) * Number(nextRequestedKm);
+    }
+
+    const updatePayload: any = {
+      ...updateQuoteDto,
+      estimatedPrice,
+    };
+
+    if (updatePayload.bookingDate) {
+      updatePayload.bookingDate = new Date(updatePayload.bookingDate);
+    }
+
+    await this.quotesRepository.update(updatePayload, {
+      where: { id, clientId },
     });
-    return data;
+
+    return await this.findOne(id);
   }
 
-  async remove(id: number) {
-    const check = await this.quotesRepository.findOne({ where: { id } });
+  async remove(id: number, clientId: number) {
+    const check = await this.quotesRepository.findOne({
+      where: { id, clientId },
+    });
 
     if (!check) {
       throw new BadRequestException('Quote not found');
+    }
+
+    if (check.status !== QuoteStatus.PENDING) {
+      throw new BadRequestException('Only pending quotes can be deleted');
     }
 
     const data = await this.quotesRepository.destroy({ where: { id } });
@@ -159,6 +251,9 @@ export class QuotesService {
             plannedKm: check.requestedKm,
             vehicleId: check.vehicleId,
             staffId: staffId,
+            extraKm: 0,
+            totalCost: check.estimatedPrice,
+            status: RentalStatus.ASSIGNED,
           } as unknown as Rental,
           { transaction },
         );
@@ -167,9 +262,34 @@ export class QuotesService {
       await transaction.commit();
 
       return { message: 'Quote status updated successfully' };
-    } catch (error) {
+    } catch (error: any) {
       await transaction.rollback();
-      throw new BadRequestException(error.message || 'Transaction failed');
+      throw new BadRequestException(error?.message || 'Transaction failed');
     }
+  }
+
+  async findVehicleDisableDates(vehicleId: number) {
+    const quotes = await this.quotesRepository.findAll({
+      attributes: ['bookingDate'],
+      where: {
+        vehicleId,
+        status: QuoteStatus.APPROVED,
+        bookingDate: {
+          [Op.gte]: new Date(),
+        },
+      },
+      order: [['bookingDate', 'ASC']],
+    });
+
+    const uniqueDates = [
+      ...new Set(
+        quotes.map((quote) => {
+          const bookingDate = new Date((quote as any).bookingDate);
+          return bookingDate.toISOString().split('T')[0];
+        }),
+      ),
+    ];
+
+    return uniqueDates;
   }
 }
