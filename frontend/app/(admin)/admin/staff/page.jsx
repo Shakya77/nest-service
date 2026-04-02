@@ -31,7 +31,7 @@ export default function page() {
   const fetchStaff = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/users/staff");
+      const { data } = await api.get("/staff");
       setStaff(data);
     } catch (err) {
       message.error(err?.response?.data?.message || err.message);
@@ -48,17 +48,25 @@ export default function page() {
     {
       title: "Name",
       dataIndex: "name",
-      key: "name",
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          <span>{record.user.name}</span>
+        </div>
+      ),
     },
     {
       title: "Email",
       dataIndex: "email",
-      key: "email",
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          <span>{record.user.email}</span>
+        </div>
+      ),
     },
     {
       title: "Hourly Rate",
-      dataIndex: "hourlyRate",
-      key: "hourlyRate",
+      dataIndex: "ratePerHr",
+      key: "ratePerHr",
       render: (value) => {
         return `Rs. ${Number(value || 0).toFixed(2)}`;
       },
@@ -212,7 +220,7 @@ export default function page() {
           </Form.Item>
 
           <Divider />
-          <Form.Item label="Hourly rate" name="hourlyRate">
+          <Form.Item label="Hourly rate" name="ratePerHr">
             <Input size="large" />
           </Form.Item>
           <Form.Item label="License number" name="licenseNumber">

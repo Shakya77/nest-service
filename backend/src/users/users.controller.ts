@@ -19,6 +19,8 @@ import { AllowedRoles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from './entities/user.entity';
 
+@AllowedRoles(Roles.ADMIN)
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -31,13 +33,11 @@ export class UsersController {
   }
 
   @Get()
-  @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
   async findAll(
     @Request() req,
     @Query('page') page: string,
     @Query('limit') limit: string,
-    @Query('role') role: string,
+    @Query('role') role: Roles,
   ) {
     const userId = req.user.id;
     return await this.usersService.findAll(

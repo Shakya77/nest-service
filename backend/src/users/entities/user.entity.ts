@@ -1,4 +1,13 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  HasMany,
+  HasOne,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+import { StaffDetail } from 'src/staff_details/entities/staff_detail.entity';
+import { StaffHour } from 'src/staff_details/entities/staff_hour.entity';
 
 export enum Roles {
   ADMIN = 'admin',
@@ -60,4 +69,18 @@ export class User extends Model<User> {
     defaultValue: 0,
   })
   rewardPoints: number;
+
+  @HasOne(() => StaffDetail, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'staffDetail',
+  })
+  staffDetail: StaffDetail;
+
+  @HasMany(() => StaffHour, {
+    foreignKey: 'staffId',
+    sourceKey: 'id',
+    as: 'staffHours',
+  })
+  staffHours: StaffHour[];
 }

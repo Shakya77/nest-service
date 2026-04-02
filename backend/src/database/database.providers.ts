@@ -34,7 +34,7 @@ export const databaseProviders = [
         RentalStaffHour,
       ]);
 
-      await sequelize.sync();
+      await sequelize.sync({ alter: true });
       return sequelize;
     },
   },

@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateStaffDetailDto } from './dto/create-staff_detail.dto';
 import { UpdateStaffDetailDto } from './dto/update-staff_detail.dto';
-import { Transaction } from 'sequelize';
+import { col, fn, Transaction } from 'sequelize';
 import { STAFF_DETAILS_REPOSITORY } from '../../constants';
 import { StaffDetail } from './entities/staff_detail.entity';
-import { User } from 'src/users/entities/user.entity';
+import { StaffHour } from './entities/staff_hour.entity';
 
 @Injectable()
 export class StaffDetailsService {
@@ -29,13 +29,46 @@ export class StaffDetailsService {
 
   async findAll() {
     const data = await this.staffDetailsRepository.findAll({
-      include: {
-        model: User,
-      },
+      attributes: [
+        'id',
+        'ratePerHr',
+        [fn('SUM', col('staffHours.totalHours')), 'totalHours'],
+      ],
+
+      include: [
+        {
+          association: 'user', // same as include: ['user']
+          attributes: ['id', 'name', 'email', 'isActive'],
+        },
+        {
+          model: StaffHour,
+          as: 'staffHours',
+          attributes: [],
+          required: false, // LEFT JOIN
+        },
+      ],
+
+      group: ['StaffDetail.id', 'StaffDetail.ratePerHr', 'user.id'],
+
       order: [['createdAt', 'DESC']],
+
+      raw: true,
+      nest: true,
     });
 
-    return data;
+    const result = data.map((item) => {
+      const totalHours = Number((item as any).totalHours || 0);
+      const hourlyRate = Number((item as any).ratePerHr || 0);
+
+      return {
+        ...item,
+        hourlyRate,
+        totalHours,
+        totalIncome: totalHours * hourlyRate,
+      };
+    });
+
+    return result;
   }
 
   async findOne(id: number) {

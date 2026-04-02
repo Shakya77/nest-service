@@ -103,3 +103,8 @@ Content-Type: application/json
 GET {{baseUrl}}/users
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get all staff
+GET {{baseUrl}}/users/staff
+Content-Type: application/json
+Authorization: Bearer {{token}}

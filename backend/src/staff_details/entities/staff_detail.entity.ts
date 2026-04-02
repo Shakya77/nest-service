@@ -3,10 +3,12 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { User } from 'src/users/entities/user.entity';
+import { StaffHour } from './staff_hour.entity';
 
 @Table({
   tableName: 'staff_details',
@@ -28,6 +30,13 @@ export class StaffDetail extends Model<StaffDetail> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasMany(() => StaffHour, {
+    foreignKey: 'staffId',
+    sourceKey: 'userId',
+    as: 'staffHours',
+  })
+  staffHours: StaffHour[];
 
   @Column({
     type: DataType.DECIMAL(10, 2),

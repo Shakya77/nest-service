@@ -11,14 +11,16 @@ export class VehiclesService {
   ) {}
 
   async create(createVehicleDto: CreateVehicleDto) {
-    const vehicle = await this.vehicleRepository.create(createVehicleDto);
-
-    return vehicle;
+    return await this.vehicleRepository.create({
+      ...createVehicleDto,
+      isAvailable: createVehicleDto.isAvailable ?? true,
+    });
   }
 
   async findAll() {
-    const data = await this.vehicleRepository.findAll();
-    return data;
+    return await this.vehicleRepository.findAll({
+      order: [['createdAt', 'DESC']],
+    });
   }
 
   async findOne(id: number) {
@@ -33,11 +35,11 @@ export class VehiclesService {
       throw new NotFoundException('Vehicle not found');
     }
 
-    const vehicle = await this.vehicleRepository.update(updateVehicleDto, {
+    await this.vehicleRepository.update(updateVehicleDto, {
       where: { id },
     });
 
-    return { message: 'Vehicle updated successfully' };
+    return await this.vehicleRepository.findOne({ where: { id } });
   }
 
   async remove(id: number) {

@@ -7,6 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Rental } from 'src/quotes/entities/rental.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Table({
   tableName: 'staff_hours',
@@ -35,6 +36,13 @@ export class StaffHour extends Model<StaffHour> {
   })
   staffId: number;
 
+  @BelongsTo(() => User, {
+    foreignKey: 'staffId',
+    targetKey: 'id',
+    as: 'staff',
+  })
+  staff: User;
+
   @Column({
     type: DataType.TIME,
     allowNull: true,
@@ -48,7 +56,7 @@ export class StaffHour extends Model<StaffHour> {
   endTime: Date;
 
   @Column({
-    type: DataType.DATE,
+    type: DataType.DECIMAL(10, 2),
     allowNull: true,
   })
   totalHours: number;

@@ -94,7 +94,7 @@ export default function RegisterPage() {
             {role === "staff" ? (
               <>
                 <Divider />
-                <Form.Item label="Hourly rate" name="hourlyRate">
+                <Form.Item label="Hourly rate" name="ratePerHr">
                   <Input size="large" />
                 </Form.Item>
                 <Form.Item label="License number" name="licenseNumber">

@@ -1,4 +1,4 @@
-import { IsNumber, isString, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateVehicleDto {
   @IsString()
@@ -9,4 +9,8 @@ export class CreateVehicleDto {
 
   @IsString()
   registrationNo: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isAvailable?: boolean;
 }

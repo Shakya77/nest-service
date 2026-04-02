@@ -67,16 +67,16 @@ export class UsersService {
   async findAll(
     page: number = 1,
     limit: number = 10,
-    role?: string,
+    role?: Roles,
     userId?: number,
   ) {
     const offset = (page - 1) * limit;
 
-    const whereCondition = role ? { role } : {};
+    const whereCondition = (role as Roles) ? { role } : {};
 
     const { rows, count } = await this.usersRepository.findAndCountAll({
       where: {
-        id: { [Op.ne]: userId },
+        role: { [Op.ne]: Roles.ADMIN },
         ...whereCondition,
       },
       limit,
