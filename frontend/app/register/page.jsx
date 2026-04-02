@@ -17,7 +17,7 @@ import { dashboardForRole, useAuth } from "../context/AuthContext";
 
 const { Title, Text } = Typography;
 const roleOptions = [
-  { value: "client", label: "Client" },
+  { value: "user", label: "user" },
   { value: "staff", label: "Staff" },
   { value: "admin", label: "Admin" },
 ];

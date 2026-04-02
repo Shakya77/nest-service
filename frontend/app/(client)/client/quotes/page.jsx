@@ -23,7 +23,7 @@ import {
 import api from "@/lib/api";
 import dayjs from "dayjs";
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import Ticket from "@/app/components/Ticket";
+import Ticket from "@/components/Ticket";
 
 const { Title, Text } = Typography;
 

@@ -48,3 +48,5 @@ export class Vehicle extends Model<Vehicle> {
   @HasMany(() => Quote)
   quotes: Quote[];
 }
+
+

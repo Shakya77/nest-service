@@ -7,6 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { StaffDetailsService } from 'src/staff_details/staff_details.service';
 import { Sequelize } from 'sequelize-typescript';
 import { Op, Transaction } from 'sequelize';
+import slugify from "slugify";
 
 @Injectable()
 export class UsersService {
@@ -35,6 +36,7 @@ export class UsersService {
 
       const userData = {
         ...createUserDto,
+        slug: slugify(createUserDto.name),
         password: hashedPassword,
       };
 
