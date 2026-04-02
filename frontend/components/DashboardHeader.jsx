@@ -4,8 +4,8 @@ import { Button, Modal, Typography, theme } from "antd";
 import { LogoutOutlined } from "@ant-design/icons";
 import { Header } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 const { Text } = Typography;
 

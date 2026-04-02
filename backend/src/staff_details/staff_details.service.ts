@@ -4,6 +4,7 @@ import { UpdateStaffDetailDto } from './dto/update-staff_detail.dto';
 import { Transaction } from 'sequelize';
 import { STAFF_DETAILS_REPOSITORY } from '../../constants';
 import { StaffDetail } from './entities/staff_detail.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class StaffDetailsService {
@@ -26,11 +27,18 @@ export class StaffDetailsService {
     return data;
   }
 
-  findAll() {
-    return `This action returns all staffDetails`;
+  async findAll() {
+    const data = await this.staffDetailsRepository.findAll({
+      include: {
+        model: User,
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    return data;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} staffDetail`;
   }
 

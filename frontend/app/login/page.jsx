@@ -28,8 +28,9 @@ export default function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", values);
 
-      if (data?.token) {
-        const decoded = login(data.token);
+      if (data?.access_token) {
+        const decoded = login(data.access_token);
+        console.log(decoded);
         const role = decoded?.role;
         router.push(dashboardForRole(role));
       } else {

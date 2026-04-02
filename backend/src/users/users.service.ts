@@ -6,7 +6,7 @@ import { USERS_REPOSITORY } from '../../constants';
 import * as bcrypt from 'bcryptjs';
 import { StaffDetailsService } from 'src/staff_details/staff_details.service';
 import { Sequelize } from 'sequelize-typescript';
-import { Transaction } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 
 @Injectable()
 export class UsersService {
@@ -62,12 +62,39 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(page: number = 1, limit: number = 10, search?: string) {
+    const offset = (page - 1) * limit;
+
+    const whereCondition = search
+      ? {
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${search}%` } },
+            { email: { [Op.iLike]: `%${search}%` } },
+          ],
+        }
+      : {};
+
+    const { rows, count } = await this.usersRepository.findAndCountAll({
+      where: whereCondition,
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+    });
+
+    return {
+      data: rows,
+      meta: {
+        total: count,
+        page,
+        lastPage: Math.ceil(count / limit),
+      },
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.usersRepository.findOne({
+      where: { id },
+    });
   }
 
   async findOneEmail(email: string) {
@@ -84,7 +111,22 @@ export class UsersService {
     return data;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const data = await this.usersRepository.destroy({
+      where: { id },
+    });
+
+    return data;
+  }
+
+  async changeStatus(id: number, role: string, isActive: boolean) {
+    const data = await this.usersRepository.update(
+      { isActive },
+      {
+        where: { id, role },
+      },
+    );
+
+    return data;
   }
 }

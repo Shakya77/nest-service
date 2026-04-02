@@ -111,7 +111,7 @@ export default function page() {
             ]}
           />
 
-          <Button >Bulk Update</Button>
+          <Button>Bulk Update</Button>
         </Space>
 
         <Table
@@ -124,9 +124,9 @@ export default function page() {
           pagination={{
             current: page,
             pageSize: pageSize,
-            total: data?.total,
+            total: data?.meta?.total || 0, // ✅ FIX HERE
             showSizeChanger: true,
-            pageSizeOptions: ["5", "10", "20", "50"],
+            pageSizeOptions: ["1", "10", "20", "50"],
             onChange: (newPage, newPageSize) => {
               setPage(newPage);
               setPageSize(newPageSize);

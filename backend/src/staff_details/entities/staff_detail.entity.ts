@@ -26,6 +26,9 @@ export class StaffDetail extends Model<StaffDetail> {
   })
   userId: number;
 
+  @BelongsTo(() => User)
+  user: User;
+
   @Column({
     type: DataType.DECIMAL(10, 2),
   })
@@ -35,7 +38,4 @@ export class StaffDetail extends Model<StaffDetail> {
     type: DataType.STRING,
   })
   licenseNumber: string;
-
-  @BelongsTo(() => User)
-  user: User;
 }

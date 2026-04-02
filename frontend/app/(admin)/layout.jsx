@@ -12,8 +12,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu } from "antd";
-import DashboardHeader from "../components/DashboardHeader";
 import { dashboardForRole, useAuth } from "../context/AuthContext";
+import DashboardHeader from "@/components/DashboardHeader";
 
 const { Sider, Content, Footer } = Layout;
 
