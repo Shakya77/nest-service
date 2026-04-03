@@ -49,7 +49,7 @@ export default function page() {
       const { data } = await api.get("/users/staff");
       setStaffOptions(
         data.map((staff) => ({
-          value: staff.id,
+          value: staff.user?.id,
           label: `${staff.name} (${staff.email})`,
         })),
       );
@@ -161,7 +161,7 @@ export default function page() {
       ),
     },
   ];
-
+  console.log(staffOptions);
   return (
     <div className="flex flex-col gap-6">
       <Card>

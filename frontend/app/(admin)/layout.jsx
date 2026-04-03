@@ -53,11 +53,6 @@ const menuItems = [
     "/admin/rentals",
     <FileTextOutlined />,
   ),
-  getItem(
-    <Link href="/admin/leaves">Leaves</Link>,
-    "/admin/leaves",
-    <FileTextOutlined />,
-  ),
 ];
 
 function breadcrumbFromPath(pathname) {

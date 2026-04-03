@@ -121,4 +121,5 @@ export class UsersController {
   ) {
     return this.usersService.changeStatus(+id, role, isActive);
   }
+
 }

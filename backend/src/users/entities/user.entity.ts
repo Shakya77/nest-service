@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer';
 import {
   Column,
   DataType,
@@ -45,7 +44,6 @@ export class User extends Model<User> {
   })
   email: string;
 
-  @Exclude()
   @Column({
     type: DataType.STRING,
     allowNull: true,

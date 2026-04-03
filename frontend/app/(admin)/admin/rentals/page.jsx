@@ -98,7 +98,7 @@ export default function page() {
         <Table
           rowKey="id"
           columns={columns}
-          dataSource={rentals}
+          dataSource={[]}
           loading={loading}
           scroll={{ x: "max-content" }}
           pagination={{ pageSize: 8 }}
