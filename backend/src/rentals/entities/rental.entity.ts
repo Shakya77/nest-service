@@ -6,9 +6,9 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Quote } from './quote.entity';
 import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Quote } from 'src/quotes/entities/quote.entity';
 
 export enum RentalStatus {
   ASSIGNED = 'assigned',

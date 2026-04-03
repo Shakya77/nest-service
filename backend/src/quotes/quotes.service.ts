@@ -9,7 +9,6 @@ import { UpdateQuoteDto } from './dto/update-quote.dto';
 import { Roles, User } from 'src/users/entities/user.entity';
 import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { Quote, QuoteStatus } from './entities/quote.entity';
-import { Rental, RentalStatus } from './entities/rental.entity';
 import { Sequelize } from 'sequelize-typescript';
 import {
   QUOTES_REPOSITORY,
@@ -18,6 +17,7 @@ import {
   VEHICLE_REPOSITORY,
 } from '../../constants';
 import { Op } from 'sequelize';
+import { Rental, RentalStatus } from 'src/rentals/entities/rental.entity';
 
 @Injectable()
 export class QuotesService {

@@ -90,10 +90,9 @@ export default function page() {
     {
       title: "Status",
       dataIndex: "isActive",
-      key: "isActive",
-      render: (value) => (
-        <Tag color={value ? "green" : "red"}>
-          {value ? "Active" : "Inactive"}
+      render: (value, record) => (
+        <Tag color={record.user.isActive ? "green" : "red"}>
+          {record.user.isActive ? "Active" : "Inactive"}
         </Tag>
       ),
     },

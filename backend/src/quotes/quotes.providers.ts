@@ -5,21 +5,13 @@ import {
   RENTALS_REPOSITORY,
 } from '../../constants';
 import { Quote } from './entities/quote.entity';
-import { Rental } from './entities/rental.entity';
-import { RentalDistanceLog } from './entities/rental_distance_log.entity';
-import { RentalStaffHour } from './entities/rental_staff_hour.entity';
+import { RentalDistanceLog } from '../rentals/entities/rental_distance_log.entity';
+import { RentalStaffHour } from '../rentals/entities/rental_staff_hour.entity';
 
 export const quotesProviders = [
   {
     provide: QUOTES_REPOSITORY,
     useValue: Quote,
-  },
-];
-
-export const rentalsProviders = [
-  {
-    provide: RENTALS_REPOSITORY,
-    useValue: Rental,
   },
 ];
 

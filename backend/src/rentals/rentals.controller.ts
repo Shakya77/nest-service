@@ -1,70 +1,34 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Param,
-  ParseIntPipe,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RentalsService } from './rentals.service';
+import { CreateRentalDto } from './dto/create-rental.dto';
+import { UpdateRentalDto } from './dto/update-rental.dto';
 
 @Controller('rentals')
-@UseGuards(AuthGuard('jwt'))
 export class RentalsController {
   constructor(private readonly rentalsService: RentalsService) {}
+
+  @Post()
+  create(@Body() createRentalDto: CreateRentalDto) {
+    return this.rentalsService.create(createRentalDto);
+  }
 
   @Get()
   findAll() {
     return this.rentalsService.findAll();
   }
 
-  @Get('staff')
-  findStaffRentals(@Request() req) {
-    return this.rentalsService.findStaffRentals(req.user.id);
-  }
-
-  @Get('client')
-  findClientPastRides(@Request() req) {
-    return this.rentalsService.findClientPastRides(req.user.id);
-  }
-
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.rentalsService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.rentalsService.findOne(+id);
   }
 
-  @Post(':id/start')
-  startRental(@Request() req, @Param('id', ParseIntPipe) id: number) {
-    return this.rentalsService.startRental(id, req.user.id);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateRentalDto: UpdateRentalDto) {
+    return this.rentalsService.update(+id, updateRentalDto);
   }
 
-  @Post(':id/end')
-  endRental(
-    @Request() req,
-    @Param('id', ParseIntPipe) id: number,
-    @Body()
-    body: {
-      rewardPointsUsed?: number;
-      paymentMethod?: string;
-    },
-  ) {
-    return this.rentalsService.endRental(
-      id,
-      req.user.id,
-      body?.rewardPointsUsed ?? 0,
-      body?.paymentMethod ?? 'cash',
-    );
-  }
-
-  @Post(':id/extra')
-  addExtraKm(
-    @Request() req,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: { addedKm: number },
-  ) {
-    return this.rentalsService.addExtraKm(id, req.user.id, body?.addedKm);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.rentalsService.remove(+id);
   }
 }

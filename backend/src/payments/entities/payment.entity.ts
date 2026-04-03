@@ -6,7 +6,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Rental } from 'src/quotes/entities/rental.entity';
+import { Rental } from 'src/rentals/entities/rental.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @Table({
