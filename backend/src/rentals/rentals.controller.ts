@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { RentalsService } from './rentals.service';
 import { CreateRentalDto } from './dto/create-rental.dto';
 import { UpdateRentalDto } from './dto/update-rental.dto';
@@ -13,8 +22,8 @@ export class RentalsController {
   }
 
   @Get()
-  findAll() {
-    return this.rentalsService.findAll();
+  findAll(@Query('page') page: number, @Query('limit') limit: number) {
+    return this.rentalsService.findAll(page, limit);
   }
 
   @Get(':id')

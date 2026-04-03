@@ -113,3 +113,8 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/vehicles
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get all rentals
+GET {{baseUrl}}/rentals
+Content-Type: application/json
+Authorization: Bearer {{token}}

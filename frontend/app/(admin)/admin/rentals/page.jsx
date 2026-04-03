@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 import { Button, Card, Space, Table, Tag, Typography, message } from "antd";
-import api from "@/lib/api";
+import useSWR from "swr";
+import { fetcher } from "@/constants";
 
 const { Title, Text } = Typography;
 
@@ -14,51 +15,51 @@ const statusColor = {
 };
 
 export default function page() {
-  const [rentals, setRentals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(4);
 
-  const fetchRentals = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get("/rentals");
-      setRentals(data);
-    } catch (err) {
-      message.error("Failed to load rentals");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const query = `/rentals?page=${page}&limit=${pageSize}`;
 
-  useEffect(() => {
-    fetchRentals();
-  }, []);
+  const { data, isLoading, mutate } = useSWR(query, fetcher);
 
   const columns = [
     {
-      title: "Rental ID",
+      title: "SN",
       dataIndex: "id",
-      key: "id",
+      render: (_, __, index) => {
+        return index + 1;
+      },
     },
     {
       title: "Vehicle",
       dataIndex: "vehicleName",
-      key: "vehicleName",
+      render: (_, record) => (
+        <div>
+          <div>{record.vehicle.name}</div>
+          <Text type="secondary">{record.vehicle.registrationNo}</Text>
+        </div>
+      ),
     },
     {
       title: "Client",
       dataIndex: "clientName",
-      key: "clientName",
+      render: (_, record) => (
+        <div>
+          <div>{record.quote.client.name}</div>
+          <Text type="secondary">{record.quote.client.email}</Text>
+        </div>
+      ),
     },
     {
       title: "Staff",
       dataIndex: "staffName",
       key: "staffName",
-      render: (value) => value || "Not assigned",
+      render: (value, record) => record.staff.name || "Not assigned",
     },
     {
       title: "Scheduled",
-      dataIndex: "scheduledDate",
-      key: "scheduledDate",
+      dataIndex: "scheduleDate",
+      key: "scheduleDate",
       render: (value) =>
         value ? dayjs(value).format("MMM D, YYYY h:mm A") : "-",
     },
@@ -91,17 +92,30 @@ export default function page() {
               Simple rental list with current status.
             </Text>
           </div>
-          <Button onClick={fetchRentals}>Refresh</Button>
+          <Button onClick={() => mutate()}>Refresh</Button>
         </Space>
       </Card>
       <Card variant="borderless">
         <Table
           rowKey="id"
           columns={columns}
-          dataSource={[]}
-          loading={loading}
+          dataSource={data?.data || []}
+          loading={isLoading}
           scroll={{ x: "max-content" }}
-          pagination={{ pageSize: 8 }}
+          pagination={{
+            current: page,
+            pageSize,
+            total: data?.meta?.total || 0,
+            showSizeChanger: true,
+            pageSizeOptions: ["4", "10", "20", "50"],
+            onChange: (newPage, newPageSize) => {
+              setPage(newPage);
+              setPageSize(newPageSize);
+            },
+            showTotal: (total, range) => {
+              return `Total ${total} records | Showing ${range[0]}-${range[1]}`;
+            },
+          }}
         />
       </Card>
     </div>
