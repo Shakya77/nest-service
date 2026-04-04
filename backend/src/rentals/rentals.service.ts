@@ -46,6 +46,7 @@ export class RentalsService {
           include: [
             {
               model: User,
+              as: 'client',
               attributes: ['id', 'name'],
             },
           ],

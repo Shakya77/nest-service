@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import dayjs from "dayjs";
-import { Button, Card, Space, Table, Tag, Typography, message } from "antd";
+import { Button, Card, Select, Space, Table, Tag, Typography } from "antd";
 import useSWR from "swr";
 import { fetcher } from "@/constants";
 
@@ -19,8 +19,14 @@ export default function page() {
   const [pageSize, setPageSize] = useState(4);
 
   const query = `/rentals?page=${page}&limit=${pageSize}`;
-
   const { data, isLoading, mutate } = useSWR(query, fetcher);
+
+  const clients = `/users/customer`;
+  const {
+    data: clientsData,
+    isLoading: isClientsLoading,
+    mutate: mutateClients,
+  } = useSWR(clients, fetcher);
 
   const columns = [
     {
@@ -96,6 +102,17 @@ export default function page() {
         </Space>
       </Card>
       <Card variant="borderless">
+        <Select
+          allowClear
+          loading={isClientsLoading}
+          onChange={(value) => {}}
+          options={clientsData?.map((client) => ({
+            label: client.name,
+            value: client.id,
+          }))}
+          placeholder="Filter by user"
+        ></Select>
+
         <Table
           rowKey="id"
           columns={columns}

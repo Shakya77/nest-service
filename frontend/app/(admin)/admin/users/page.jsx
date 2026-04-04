@@ -34,6 +34,7 @@ export default function page() {
   const { data, isLoading, mutate } = useSWR(query, fetcher);
 
   const changeStatus = async (id, role, checked) => {
+    console.log(id, role, checked);
     try {
       await api.patch(`/users/${role}/${id}`, { isActive: checked });
       message.success("Status updated");
@@ -67,7 +68,7 @@ export default function page() {
       key: "status",
       render: (_, row) => (
         <Switch
-          checked={Boolean(row.isActive)}
+          checked={row.isActive}
           checkedChildren="Active"
           unCheckedChildren="Inactive"
           onChange={(checked) => changeStatus(row.id, row.role, checked)}

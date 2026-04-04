@@ -24,29 +24,36 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const transaction: Transaction = await this.sequelize.transaction();
 
+    const userSlug = await slugify(createUserDto.name);
+
+    const existingUser = await this.usersRepository.findOne({
+      where: {
+        [Op.or]: [{ email: createUserDto.email }, { slug: userSlug }],
+      },
+      transaction,
+    });
+
+    if (existingUser) {
+      throw new BadRequestException(
+        'User already exists with this name or email',
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
     try {
-      const checkEmail = await this.usersRepository.findOne({
-        where: { email: createUserDto.email },
-        transaction,
-      });
-
-      if (checkEmail) {
-        throw new BadRequestException('User already exists');
-      }
-
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-      const userData = {
+      const userData: Partial<User> = {
         ...createUserDto,
-        slug: slugify(createUserDto.name),
+        slug: userSlug,
         password: hashedPassword,
       };
 
-      const user = await this.usersRepository.create(
-        userData as unknown as User,
-        { transaction },
-      );
+      // Create user
+      const user = await this.usersRepository.create(userData as any as User, {
+        transaction,
+      });
 
+      // Optional staff details
       if (createUserDto.role === 'staff') {
         await this.staffDetailsService.create(
           {
@@ -320,5 +327,14 @@ export class UsersService {
       await transaction.rollback();
       throw error;
     }
+  }
+
+  async findCustomer() {
+    const customers = await this.usersRepository.findAll({
+      where: { role: Roles.USER },
+      attributes: ['id', 'name'],
+    });
+
+    return customers;
   }
 }

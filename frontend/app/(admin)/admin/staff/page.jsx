@@ -109,7 +109,7 @@ export default function page() {
           />
           <Popconfirm
             title="Delete this staff?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record.user.id)}
           >
             <Button type="text" icon={<DeleteOutlined />} danger />
           </Popconfirm>

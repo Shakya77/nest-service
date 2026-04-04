@@ -10,6 +10,7 @@ import {
   Put,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -41,6 +42,17 @@ export class UsersController {
     const user = await this.usersService.create(createUserDto);
 
     return user;
+  }
+
+  @AllowedRoles(Roles.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Patch('/:role/:id')
+  async changeStatus(
+    @Param('id') id: string,
+    @Param('role') role: string,
+    @Body('isActive') isActive: boolean,
+  ) {
+    return this.usersService.changeStatus(+id, role, isActive);
   }
 
   @AllowedRoles(Roles.ADMIN)
@@ -111,15 +123,8 @@ export class UsersController {
     return this.usersService.remove(+id);
   }
 
-  @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Patch('/:role/:id')
-  async changeStatus(
-    @Param('id') id: string,
-    @Param('role') role: string,
-    @Body('isActive') isActive: boolean,
-  ) {
-    return this.usersService.changeStatus(+id, role, isActive);
+  @Get('/customer')
+  async getCustomer() {
+    return this.usersService.findCustomer();
   }
-
 }
