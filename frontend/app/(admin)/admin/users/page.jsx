@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Select,
@@ -108,11 +108,9 @@ export default function page() {
             }}
             options={[
               { label: "Staff", value: "staff" },
-              { label: "Client", value: "client" },
+              { label: "User", value: "user" },
             ]}
           />
-
-          <Button>Bulk Update</Button>
         </Space>
 
         <Table
@@ -121,11 +119,10 @@ export default function page() {
           columns={columns}
           scroll={{ x: "max-content" }}
           dataSource={data?.data || []}
-          rowSelection={rowSelection}
           pagination={{
             current: page,
             pageSize: pageSize,
-            total: data?.meta?.total || 0, // ✅ FIX HERE
+            total: data?.meta?.total || 0,
             showSizeChanger: true,
             pageSizeOptions: ["1", "10", "20", "50"],
             onChange: (newPage, newPageSize) => {

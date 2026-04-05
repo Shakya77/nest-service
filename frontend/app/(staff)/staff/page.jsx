@@ -126,17 +126,27 @@ export default function page() {
     {
       title: "Vehicle",
       dataIndex: "vehicleName",
-      key: "vehicleName",
+      render: (_, record) => (
+        <div>
+          <div>{record.vehicle.name}</div>
+          <div>{record.vehicle.registrationNo}</div>
+        </div>
+      ),
     },
     {
       title: "Client",
       dataIndex: "clientName",
-      key: "clientName",
+      render: (_, record) => (
+        <div>
+          <div>{record.quote.client.name}</div>
+          <div>{record.quote.client.email}</div>
+        </div>
+      ),
     },
     {
       title: "Scheduled",
-      dataIndex: "scheduledDate",
-      key: "scheduledDate",
+      dataIndex: "scheduleDate",
+      key: "scheduleDate",
       render: (value) =>
         value ? dayjs(value).format("MMM D, YYYY h:mm A") : "-",
     },
@@ -218,7 +228,7 @@ export default function page() {
         <Table
           rowKey="id"
           columns={columns}
-          dataSource={rentals}
+          dataSource={rentals?.data || []}
           loading={loading}
           scroll={{ x: "max-content" }}
           pagination={{ pageSize: 8 }}

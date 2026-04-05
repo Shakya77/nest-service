@@ -14,8 +14,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "bijand@gmail.com",
-  "password": "123456"
+  "email": "staff@gmail.com",
+  "password": "password"
 }
 
 #### Get profile
@@ -116,5 +116,12 @@ Authorization: Bearer {{token}}
 
 ### Get all rentals
 GET {{baseUrl}}/rentals
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0YWZmQGdtYWlsLmNvbSIsImlkIjoyLCJyb2xlIjoic3RhZmYiLCJzbHVnIjoic3RhZmYiLCJpYXQiOjE3NzU0MDUyNzh9.gkxpFHSpNoj-hPSMYM1FDOp8EqhZvsX9V4T_9UIuhq0
+
+### Get all rentals for staff
+GET {{baseUrl}}/rentals/staff?page=1&limit=10
 Content-Type: application/json
 Authorization: Bearer {{token}}

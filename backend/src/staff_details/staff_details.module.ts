@@ -15,6 +15,10 @@ import { DatabaseModule } from 'src/database/database.module';
     ...StaffDetailsProviders,
     ...StaffHoursProviders,
   ],
-  exports: [StaffDetailsService],
+  exports: [
+    StaffDetailsService,
+    ...StaffDetailsProviders,
+    ...StaffHoursProviders,
+  ],
 })
 export class StaffDetailsModule {}
