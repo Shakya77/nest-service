@@ -19,11 +19,11 @@ export default function page() {
     try {
       const [userRes, rentalsRes] = await Promise.all([
         api.get("/users/me"),
-        api.get("/rentals/client"),
+        api.get("/rentals/user"),
       ]);
 
       setRewardPoints(Number(userRes.data?.rewardPoints || 0));
-      setRentals(rentalsRes.data || []);
+      setRentals(rentalsRes?.data?.data || []);
     } catch (err) {
       message.error(err?.response?.data?.message || err.message);
     } finally {

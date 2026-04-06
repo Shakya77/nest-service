@@ -8,9 +8,10 @@ import {
 import { DatabaseModule } from 'src/database/database.module';
 import { StaffDetailsModule } from 'src/staff_details/staff_details.module';
 import { PaymentsModule } from 'src/payments/payments.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [DatabaseModule, StaffDetailsModule, PaymentsModule],
+  imports: [DatabaseModule, StaffDetailsModule, PaymentsModule, UsersModule],
   controllers: [RentalsController],
   providers: [
     RentalsService,

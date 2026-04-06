@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3001
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJpamFuc2hha3lhMTQ1QGdtYWlsLmNvbSIsImlkIjoxLCJyb2xlIjoiYWRtaW4iLCJzbHVnIjoiQmlqYW4tU2hha3lhIiwiaWF0IjoxNzc1MTUxNTQ0fQ.vHK60E02f5WtpBPqbuBGE54Dqa9FybkIuasoFP2mrYo
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWQiOjMsInJvbGUiOiJ1c2VyIiwic2x1ZyI6InVzZXIiLCJpYXQiOjE3NzU0NDIzMjB9.smABScb86nJw2_vzbNl0oOQNDNmG1G_jdDDU3K6pJFw
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "staff@gmail.com",
+  "email": "user@gmail.com",
   "password": "password"
 }
 
@@ -123,5 +123,10 @@ Authorization: Bearer {{token}}
 
 ### Get all rentals for staff
 GET {{baseUrl}}/rentals/staff?page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Get all rentals for client
+GET {{baseUrl}}/rentals/client?page=1&limit=10
 Content-Type: application/json
 Authorization: Bearer {{token}}

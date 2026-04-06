@@ -6,6 +6,7 @@ import {
   RENTAL_DISTANCE_LOGS_REPOSITORY,
   RENTALS_REPOSITORY,
   STAFF_HOURS_REPOSITORY,
+  USERS_REPOSITORY,
 } from '../../constants';
 import { Rental } from './entities/rental.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -29,6 +30,9 @@ export class RentalsService {
 
     @Inject(PAYMENTS_REPOSITORY)
     private paymentsRepository: typeof Payment,
+
+    @Inject(USERS_REPOSITORY)
+    private usersRepository: typeof User,
   ) {}
 
   async create(createRentalDto: CreateRentalDto) {
@@ -74,6 +78,7 @@ export class RentalsService {
         },
         {
           model: User,
+          as: 'staff',
           attributes: ['id', 'name', 'email'],
         },
       ],
@@ -100,6 +105,13 @@ export class RentalsService {
         {
           model: Quote,
           attributes: ['id', 'bookingDate', 'status', 'vehicleId'],
+          include: [
+            {
+              model: User,
+              as: 'client',
+              attributes: ['id', 'name', 'email'],
+            },
+          ],
         },
         {
           model: Vehicle,
@@ -107,6 +119,7 @@ export class RentalsService {
         },
         {
           model: User,
+          as: 'staff',
           attributes: ['id', 'name', 'email'],
         },
       ],
@@ -207,17 +220,27 @@ export class RentalsService {
         },
       },
     );
+    const rewardPointsEarned = Math.floor(totalCost / 100);
 
     const payments = await this.paymentsRepository.create({
       rentalId: id,
       amount: totalCost,
       clientId: vehiclePrice.quote.clientId,
       paymentDate: new Date(),
-      rewardPointsEarned: Math.floor(totalCost / 100),
+      rewardPointsEarned: rewardPointsEarned,
       paidAt: new Date(),
       paymentMethod: body.paymentMethod || 'cash',
       rewardPointsUsed: body.rewardPointsUsed || 0,
     } as any as Payment);
+
+    const user = (await this.usersRepository.findOne({
+      where: { id: vehiclePrice.quote.clientId },
+    })) as any as User;
+
+    await this.usersRepository.update(
+      { rewardPoints: user.rewardPoints + rewardPointsEarned },
+      { where: { id: vehiclePrice.quote.clientId } },
+    );
 
     return rentalEnd;
   }
@@ -226,7 +249,9 @@ export class RentalsService {
     const pageNumber = Number(page) || 1;
     const limitNumber = Number(limit) || 10;
     const offset = (pageNumber - 1) * limitNumber;
+
     const { rows, count } = await this.rentalsRepository.findAndCountAll({
+      where: { userId },
       attributes: [
         'id',
         'status',
@@ -246,7 +271,7 @@ export class RentalsService {
             {
               model: User,
               as: 'client',
-              attributes: ['id', 'name'],
+              attributes: ['id', 'name', 'email'],
             },
           ],
         },
@@ -256,6 +281,7 @@ export class RentalsService {
         },
         {
           model: User,
+          as: 'user',
           attributes: ['id', 'name', 'email'],
         },
       ],
@@ -319,6 +345,7 @@ export class RentalsService {
         },
         {
           model: User,
+          as: 'staff',
           attributes: ['id', 'name', 'email'],
         },
       ],
