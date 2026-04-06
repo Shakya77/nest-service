@@ -4,19 +4,22 @@ import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { VEHICLE_REPOSITORY } from '../../constants';
 import { Quote, QuoteStatus } from 'src/quotes/entities/quote.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Vehicle } from './entities/vehicle.entity';
+import { Rental } from 'src/rentals/entities/rental.entity';
+import { col, fn, literal } from 'sequelize';
 
 @Injectable()
 export class VehiclesService {
   constructor(
     @Inject(VEHICLE_REPOSITORY)
-    private readonly vehicleRepository,
+    private readonly vehicleRepository: typeof Vehicle,
   ) {}
 
   async create(createVehicleDto: CreateVehicleDto) {
     return await this.vehicleRepository.create({
       ...createVehicleDto,
       isAvailable: createVehicleDto.isAvailable ?? true,
-    });
+    } as any as Vehicle);
   }
 
   async findAvailable() {

@@ -7,6 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Quote } from 'src/quotes/entities/quote.entity';
+import { Rental } from 'src/rentals/entities/rental.entity';
 
 @Table({
   tableName: 'vehicles',
@@ -47,6 +48,7 @@ export class Vehicle extends Model<Vehicle> {
 
   @HasMany(() => Quote)
   quotes: Quote[];
+
+  @HasMany(() => Rental)
+  rentals: Rental[];
 }
-
-

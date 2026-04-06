@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateStaffDetailDto } from './dto/create-staff_detail.dto';
 import { UpdateStaffDetailDto } from './dto/update-staff_detail.dto';
-import { col, fn, Transaction } from 'sequelize';
+import { col, fn, literal, Op, Transaction } from 'sequelize';
 import {
   STAFF_DETAILS_REPOSITORY,
   STAFF_HOURS_REPOSITORY,
@@ -78,10 +78,25 @@ export class StaffDetailsService {
     return result;
   }
 
-  async findAllWorkingStaff() {
-    const staffHours = await this.staffHoursRepository.findAll({});
+  async findTopWorkingStaff() {
+    const staff = await this.staffHoursRepository.findAll({
+      attributes: [
+        'staffId',
+        [fn('SUM', col('StaffHour.totalHours')), 'totalHours'],
+      ],
+      include: [
+        {
+          model: User,
+          as: 'staff',
+          attributes: ['id', 'name', 'email', 'isActive'],
+        },
+      ],
+      group: ['StaffHour.staffId', 'staff.id'],
+      order: [[literal('"totalHours"'), 'DESC']],
+      limit: 1,
+    });
 
-    return staffHours;
+    return staff;
   }
 
   async findOne(id: number) {

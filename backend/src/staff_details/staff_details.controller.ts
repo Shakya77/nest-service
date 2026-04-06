@@ -26,8 +26,8 @@ export class StaffDetailsController {
   }
 
   @Get('working-staff')
-  async findAllWorkingStaff() {
-    return await this.staffDetailsService.findAllWorkingStaff();
+  async findTopWorkingStaff() {
+    return await this.staffDetailsService.findTopWorkingStaff();
   }
 
   @Get(':id')

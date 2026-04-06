@@ -8,13 +8,20 @@ const { Title, Text } = Typography;
 
 export default function page() {
   const [todaysIncome, setTodaysIncome] = useState(null);
+  const [topStaff, setTopStaff] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchStats = async () => {
     setLoading(true);
+
     try {
-      const { data } = await api.get("/payments");
-      setTodaysIncome(data.total);
+      const [paymentsRes, staffRes] = await Promise.all([
+        api.get("/payments"),
+        api.get("/staff/working-staff"),
+      ]);
+
+      setTodaysIncome(paymentsRes.data.total);
+      setTopStaff(staffRes.data);
     } catch (err) {
       message.error(err?.response?.data?.message || err.message);
     } finally {
@@ -54,8 +61,12 @@ export default function page() {
         <Card loading={loading}>
           <Space orientation="vertical" size={4}>
             <Text type="secondary">Most working employee</Text>
-            <Title level={4} style={{ margin: 0 }}></Title>
-            <Text type="secondary"></Text>
+            <Title level={4} style={{ margin: 0 }}>
+              {topStaff?.[0]?.staff.name || "N/A"}
+            </Title>
+            <Text type="secondary">
+              Total Hours: {Number(topStaff?.[0]?.totalHours || 0).toFixed(2)}
+            </Text>
           </Space>
         </Card>
         <Card loading={loading}>
