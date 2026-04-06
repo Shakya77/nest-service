@@ -93,6 +93,7 @@ export default function page() {
     {
       title: "Extra Km",
       dataIndex: "extraKm",
+      render: (value) => value || "0",
     },
   ];
 

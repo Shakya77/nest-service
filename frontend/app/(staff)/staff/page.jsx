@@ -159,6 +159,7 @@ export default function page() {
       title: "Extra Km",
       dataIndex: "extraKm",
       key: "extraKm",
+      render: (value) => value || "0",
     },
     {
       title: "Total",
