@@ -37,14 +37,21 @@ export default function page() {
 
   const rentalColumns = [
     {
+      title: "SN. No.",
+      dataIndex: "sn",
+      render: (value, record, index) => index + 1,
+    },
+    {
       title: "Vehicle",
-      dataIndex: "vehicleName",
       key: "vehicleName",
+      render: (_, record) => (
+        <div className="flex items-center gap-2">{record.vehicle.name}</div>
+      ),
     },
     {
       title: "Scheduled",
-      dataIndex: "scheduledDate",
-      key: "scheduledDate",
+      dataIndex: "scheduleDate",
+      key: "scheduleDate",
       render: (value) =>
         value ? dayjs(value).format("MMM D, YYYY h:mm A") : "-",
     },
@@ -57,6 +64,7 @@ export default function page() {
       title: "Extra Km",
       dataIndex: "extraKm",
       key: "extraKm",
+      render: (value) => (value !== null && value !== undefined ? value : "-"),
     },
     {
       title: "Total",
@@ -68,19 +76,29 @@ export default function page() {
       title: "Paid",
       dataIndex: "paidAmount",
       key: "paidAmount",
-      render: (value) => (value ? Number(value).toFixed(2) : "-"),
+      render: (value, record) => (
+        <div className="flex items-center gap-2">{record.payment?.amount}</div>
+      ),
     },
     {
       title: "Points Used",
       dataIndex: "rewardPointsUsed",
       key: "rewardPointsUsed",
-      render: (value) => (value !== null && value !== undefined ? value : "-"),
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          {record.payment?.rewardPointsUsed}
+        </div>
+      ),
     },
     {
       title: "Points Earned",
       dataIndex: "rewardPointsEarned",
       key: "rewardPointsEarned",
-      render: (value) => (value !== null && value !== undefined ? value : "-"),
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          {record.payment?.rewardPointsEarned}
+        </div>
+      ),
     },
     {
       title: "Status",

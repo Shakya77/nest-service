@@ -119,9 +119,9 @@ export default function page() {
 
   const columns = [
     {
-      title: "Rental ID",
-      dataIndex: "id",
-      key: "id",
+      title: "SN. No.",
+      dataIndex: "sn",
+      render: (value, record, index) => index + 1,
     },
     {
       title: "Vehicle",
@@ -209,6 +209,8 @@ export default function page() {
     },
   ];
 
+  console.log();
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card>
@@ -231,7 +233,6 @@ export default function page() {
           dataSource={rentals?.data || []}
           loading={loading}
           scroll={{ x: "max-content" }}
-          pagination={{ pageSize: 8 }}
         />
       </Card>
 
@@ -262,13 +263,14 @@ export default function page() {
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <Text>
-            Available reward points: {endingRental?.clientRewardPoints ?? 0}
+            Available reward points:{" "}
+            {endingRental?.quote.client.rewardPoints ?? 0}
           </Text>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <Text>Reward points used</Text>
             <InputNumber
               min={0}
-              max={Number(endingRental?.clientRewardPoints ?? 0)}
+              max={endingRental?.quote.client.rewardPoints}
               value={rewardPointsUsed}
               onChange={(value) => setRewardPointsUsed(value || 0)}
               style={{ width: "100%" }}

@@ -224,7 +224,7 @@ export class RentalsService {
 
     const payments = await this.paymentsRepository.create({
       rentalId: id,
-      amount: totalCost,
+      amount: totalCost - body.rewardPointsUsed,
       clientId: vehiclePrice.quote.clientId,
       paymentDate: new Date(),
       rewardPointsEarned: rewardPointsEarned,
@@ -238,7 +238,10 @@ export class RentalsService {
     })) as any as User;
 
     await this.usersRepository.update(
-      { rewardPoints: user.rewardPoints + rewardPointsEarned },
+      {
+        rewardPoints:
+          user.rewardPoints + rewardPointsEarned - (body.rewardPointsUsed || 0),
+      } as any as User,
       { where: { id: vehiclePrice.quote.clientId } },
     );
 
@@ -251,6 +254,43 @@ export class RentalsService {
     const offset = (pageNumber - 1) * limitNumber;
 
     const { rows, count } = await this.rentalsRepository.findAndCountAll({
+      where: { userId, status: 'completed' },
+      attributes: [
+        'id',
+        'status',
+        'scheduleDate',
+        'totalCost',
+        'plannedKm',
+        'vehicleId',
+        'staffId',
+        'extraKm',
+        'totalPrice',
+      ],
+      include: [
+        {
+          model: Quote,
+          attributes: ['id', 'bookingDate', 'status', 'vehicleId'],
+          include: [
+            {
+              model: User,
+              as: 'client',
+              attributes: ['id', 'name'],
+            },
+          ],
+        },
+        {
+          model: Vehicle,
+          attributes: ['id', 'name', 'basePricePerKm', 'registrationNo'],
+        },
+        {
+          model: Payment,
+        },
+        {
+          model: User,
+          as: 'staff',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
       limit: limitNumber,
       offset,
       order: [['createdAt', 'DESC']],
@@ -301,7 +341,7 @@ export class RentalsService {
             {
               model: User,
               as: 'client',
-              attributes: ['id', 'name'],
+              attributes: ['id', 'name', 'email', 'rewardPoints'],
             },
           ],
         },

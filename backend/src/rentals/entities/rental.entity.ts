@@ -3,12 +3,14 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Quote } from 'src/quotes/entities/quote.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 export enum RentalStatus {
   ASSIGNED = 'assigned',
@@ -101,4 +103,7 @@ export class Rental extends Model<Rental> {
     defaultValue: RentalStatus.ASSIGNED,
   })
   status: RentalStatus;
+
+  @HasOne(() => Payment)
+  payment: Payment;
 }
