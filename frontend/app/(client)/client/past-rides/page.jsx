@@ -53,7 +53,7 @@ export default function page() {
       dataIndex: "scheduleDate",
       key: "scheduleDate",
       render: (value) =>
-        value ? dayjs(value).format("MMM D, YYYY h:mm A") : "-",
+        value ? dayjs(value).format("MMM D, YYYY h:mm A") : null,
     },
     {
       title: "Planned Km",
@@ -64,7 +64,7 @@ export default function page() {
       title: "Extra Km",
       dataIndex: "extraKm",
       key: "extraKm",
-      render: (value) => (value !== null && value !== undefined ? value : "-"),
+      render: (value) => value,
     },
     {
       title: "Total",

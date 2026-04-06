@@ -68,7 +68,7 @@ export class QuotesController {
   @Patch(':id/status')
   updateStatus(
     @Param('id') id: string,
-    @Body() { status, staffId }: { status: QuoteStatus; staffId: number },
+    @Body() { status, staffId }: { status: QuoteStatus; staffId: any },
   ) {
     return this.quotesService.updateStatus(+id, status, staffId);
   }

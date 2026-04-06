@@ -25,21 +25,26 @@ export class StaffDetailsController {
     return this.staffDetailsService.findAll();
   }
 
+  @Get('working-staff')
+  async findAllWorkingStaff() {
+    return await this.staffDetailsService.findAllWorkingStaff();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.staffDetailsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateStaffDetailDto: UpdateStaffDetailDto,
   ) {
-    return this.staffDetailsService.update(+id, updateStaffDetailDto);
+    return await this.staffDetailsService.update(+id, updateStaffDetailDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.staffDetailsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.staffDetailsService.remove(+id);
   }
 }

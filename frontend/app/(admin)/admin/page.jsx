@@ -7,22 +7,14 @@ import api from "@/lib/api";
 const { Title, Text } = Typography;
 
 export default function page() {
-  const [stats, setStats] = useState({
-    mostBookedVehicle: null,
-    mostWorkingStaff: null,
-    todaysIncome: null,
-  });
+  const [todaysIncome, setTodaysIncome] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/rentals/stats");
-      setStats({
-        mostBookedVehicle: data?.mostBookedVehicle || null,
-        mostWorkingStaff: data?.mostWorkingStaff || null,
-        todaysIncome: data?.todaysIncome || null,
-      });
+      const { data } = await api.get("/payments");
+      setTodaysIncome(data.total);
     } catch (err) {
       message.error(err?.response?.data?.message || err.message);
     } finally {
@@ -33,9 +25,6 @@ export default function page() {
   useEffect(() => {
     fetchStats();
   }, []);
-
-  const bookedVehicle = stats.mostBookedVehicle;
-  const workingStaff = stats.mostWorkingStaff;
 
   return (
     <div className="admin-card" style={{ display: "grid", gap: 16 }}>
@@ -58,32 +47,22 @@ export default function page() {
         <Card loading={loading}>
           <Space orientation="vertical" size={4}>
             <Text type="secondary">Most booked vehicle</Text>
-            <Title level={4} style={{ margin: 0 }}>
-              {bookedVehicle?.name}
-            </Title>
-            <Text type="secondary">
-              {bookedVehicle ? `${bookedVehicle.totalBookings} bookings` : ""}
-            </Text>
+            <Title level={4} style={{ margin: 0 }}></Title>
+            <Text type="secondary"></Text>
           </Space>
         </Card>
         <Card loading={loading}>
           <Space orientation="vertical" size={4}>
             <Text type="secondary">Most working employee</Text>
-            <Title level={4} style={{ margin: 0 }}>
-              {workingStaff?.name}
-            </Title>
-            <Text type="secondary">
-              {workingStaff
-                ? `${Number(workingStaff.totalHours || 0).toFixed(2)} hours`
-                : ""}
-            </Text>
+            <Title level={4} style={{ margin: 0 }}></Title>
+            <Text type="secondary"></Text>
           </Space>
         </Card>
         <Card loading={loading}>
           <Space orientation="vertical" size={4}>
             <Text type="secondary">Today's Income</Text>
             <Title level={4} style={{ margin: 0 }}>
-              Rs. {Number(stats.todaysIncome?.totalIncome || 0).toFixed(2)}
+              Rs. {Number(todaysIncome || 0).toFixed(2)}
             </Title>
           </Space>
         </Card>

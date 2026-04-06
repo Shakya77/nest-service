@@ -16,31 +16,36 @@ import { UpdatePaymentDto } from './dto/update-payment.dto';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentsService.create(createPaymentDto);
-  }
+  // @Post()
+  // create(@Body() createPaymentDto: CreatePaymentDto) {
+  //   return this.paymentsService.create(createPaymentDto);
+  // }
 
   @Get()
-  findAll() {
-    return this.paymentsService.findAll();
+  async payments() {
+    return await this.paymentsService.payments();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.paymentsService.findOne(id);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.paymentsService.findAll();
+  // }
 
-  @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updatePaymentDto: UpdatePaymentDto,
-  ) {
-    return this.paymentsService.update(id, updatePaymentDto);
-  }
+  //   @Get(':id')
+  //   findOne(@Param('id', ParseIntPipe) id: number) {
+  //     return this.paymentsService.findOne(id);
+  //   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.paymentsService.remove(id);
-  }
+  //   @Patch(':id')
+  //   update(
+  //     @Param('id', ParseIntPipe) id: number,
+  //     @Body() updatePaymentDto: UpdatePaymentDto,
+  //   ) {
+  //     return this.paymentsService.update(id, updatePaymentDto);
+  //   }
+
+  //   @Delete(':id')
+  //   remove(@Param('id', ParseIntPipe) id: number) {
+  //     return this.paymentsService.remove(id);
+  //   }
 }

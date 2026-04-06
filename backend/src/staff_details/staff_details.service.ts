@@ -2,15 +2,22 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateStaffDetailDto } from './dto/create-staff_detail.dto';
 import { UpdateStaffDetailDto } from './dto/update-staff_detail.dto';
 import { col, fn, Transaction } from 'sequelize';
-import { STAFF_DETAILS_REPOSITORY } from '../../constants';
+import {
+  STAFF_DETAILS_REPOSITORY,
+  STAFF_HOURS_REPOSITORY,
+} from '../../constants';
 import { StaffDetail } from './entities/staff_detail.entity';
 import { StaffHour } from './entities/staff_hour.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class StaffDetailsService {
   constructor(
     @Inject(STAFF_DETAILS_REPOSITORY)
     private staffDetailsRepository: typeof StaffDetail,
+
+    @Inject(STAFF_HOURS_REPOSITORY)
+    private staffHoursRepository: typeof StaffHour,
   ) {}
 
   async create(
@@ -69,6 +76,12 @@ export class StaffDetailsService {
     });
 
     return result;
+  }
+
+  async findAllWorkingStaff() {
+    const staffHours = await this.staffHoursRepository.findAll({});
+
+    return staffHours;
   }
 
   async findOne(id: number) {

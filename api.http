@@ -130,3 +130,9 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/rentals/user
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get all staff hours
+
+GET {{baseUrl}}/staff/working-staff
+Content-Type: application/json
+Authorization: Bearer {{token}}

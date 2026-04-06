@@ -30,17 +30,14 @@ export class StaffHour extends Model<StaffHour> {
   @BelongsTo(() => Rental)
   rental: Rental;
 
+  @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
   staffId: number;
 
-  @BelongsTo(() => User, {
-    foreignKey: 'staffId',
-    targetKey: 'id',
-    as: 'staff',
-  })
+  @BelongsTo(() => User)
   staff: User;
 
   @Column({

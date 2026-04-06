@@ -7,7 +7,7 @@ Content-Type: application/json
 {
   "name": "System Admin",
   "email": "admin@gmail.com",
-  "password": "password123",
+  "password": "password",
   "role": "admin",
   "isActive": true,
   "rewardPoints": 0,
@@ -23,7 +23,7 @@ Content-Type: application/json
 {
   "name": "Support Staff",
   "email": "staff@gmail.com",
-  "password": "password123",
+  "password": "password",
   "role": "staff",
   "isActive": true,
   "rewardPoints": 0,
@@ -39,7 +39,7 @@ Content-Type: application/json
 {
   "name": "Regular User",
   "email": "user@gmail.com",
-  "password": "password123",
+  "password": "password",
   "role": "user",
   "isActive": true,
   "rewardPoints": 0,

@@ -207,7 +207,7 @@ export class QuotesService {
     return data;
   }
 
-  async updateStatus(id: number, status: string, staffId: number) {
+  async updateStatus(id: number, status: string, staffId: any = null) {
     const transaction = await this.sequelize.transaction();
 
     try {
@@ -226,14 +226,6 @@ export class QuotesService {
         throw new BadRequestException('Quote already approved or rejected');
       }
 
-      const validStaff = await this.usersRepository.findOne({
-        where: { role: Roles.STAFF, id: staffId },
-      });
-
-      if (!validStaff) {
-        throw new BadRequestException('Staff not found');
-      }
-
       await this.quotesRepository.update(
         { status: status as QuoteStatus },
         {
@@ -243,6 +235,14 @@ export class QuotesService {
       );
 
       if (status === QuoteStatus.APPROVED) {
+        const validStaff = await this.usersRepository.findOne({
+          where: { role: Roles.STAFF, id: staffId },
+        });
+
+        if (!validStaff) {
+          throw new BadRequestException('Staff not found');
+        }
+
         await this.rentalsRepository.create(
           {
             quoteId: id,

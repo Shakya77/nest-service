@@ -1,9 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, Modal, Select, Table, Tag, Typography, message } from "antd";
+import {
+  Button,
+  Card,
+  Modal,
+  Select,
+  Table,
+  Tag,
+  Typography,
+  message,
+} from "antd";
 import api from "@/lib/api";
 import dayjs from "dayjs";
+import { mutate } from "swr";
 
 const { Title, Text } = Typography;
 
@@ -76,7 +86,7 @@ export default function page() {
       setAssignModalOpen(true);
       return;
     }
-
+    console.log(record);
     Modal.confirm({
       title: "Confirm status change",
       content: `Change status from ${record.status} to ${nextStatus}?`,
@@ -173,6 +183,9 @@ export default function page() {
             Approve, reject, and track pending quote requests.
           </Text>
         </div>
+        <Button onClick={() => fetchQuotes()} className="mt-4">
+          Refresh
+        </Button>
       </Card>
 
       <Card>

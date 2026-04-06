@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -24,6 +25,9 @@ export class RentalDistanceLog extends Model<RentalDistanceLog> {
     type: DataType.INTEGER,
   })
   rentalId: number;
+
+  @BelongsTo(() => Rental)
+  rental: Rental;
 
   @Column({
     type: DataType.DECIMAL(10, 2),
