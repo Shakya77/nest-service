@@ -21,15 +21,15 @@ export class PaymentsController {
   //   return this.paymentsService.create(createPaymentDto);
   // }
 
-  @Get()
+  @Get('total')
   async payments() {
     return await this.paymentsService.payments();
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.paymentsService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.paymentsService.findAll();
+  }
 
   //   @Get(':id')
   //   findOne(@Param('id', ParseIntPipe) id: number) {

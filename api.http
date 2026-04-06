@@ -142,3 +142,8 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/vehicles/bookedVehicle
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get all payments
+GET {{baseUrl}}/payments
+Content-Type: application/json
+Authorization: Bearer {{token}}

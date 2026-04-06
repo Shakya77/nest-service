@@ -370,4 +370,12 @@ export class RentalsService {
       },
     };
   }
+
+  async findDistanceLogs(id: number) {
+    const distanceLogs = await this.rentalDistanceLogsRepository.findAll({
+      where: { rentalId: id },
+    });
+
+    return distanceLogs;
+  }
 }

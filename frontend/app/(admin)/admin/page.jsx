@@ -17,7 +17,7 @@ export default function page() {
 
     try {
       const [paymentsRes, staffRes, bookedVehicleRes] = await Promise.all([
-        api.get("/payments"),
+        api.get("/payments/total"),
         api.get("/staff/working-staff"),
         api.get("/vehicles/bookedVehicle"),
       ]);

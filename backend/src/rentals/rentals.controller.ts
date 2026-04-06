@@ -92,4 +92,9 @@ export class RentalsController {
   async remove(@Param('id') id: string) {
     return await this.rentalsService.remove(+id);
   }
+
+  @Get('/:id/distance-logs')
+  async findDistanceLogs(@Param('id') id: number) {
+    return await this.rentalsService.findDistanceLogs(id);
+  }
 }

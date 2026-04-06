@@ -25,10 +25,7 @@ export class VehiclesService {
 
   async findBookedVehicle() {
     const bookedVehicles = await this.rentalRepository.findAll({
-      attributes: [
-        'vehicleId',
-        [fn('COUNT', col('vehicleId')), 'totalBookings'],
-      ],
+      attributes: ['vehicleId', [fn('COUNT', 'vehicleId'), 'totalBookings']],
       include: [
         {
           model: Vehicle,
@@ -36,7 +33,7 @@ export class VehiclesService {
         },
       ],
       group: ['vehicleId', 'vehicle.id'],
-      order: [[fn('COUNT', col('vehicleId')), 'DESC']],
+      order: [[fn('COUNT', 'vehicleId'), 'DESC']],
       limit: 1,
     });
 

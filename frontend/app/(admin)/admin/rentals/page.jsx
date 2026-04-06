@@ -2,9 +2,19 @@
 
 import { useState } from "react";
 import dayjs from "dayjs";
-import { Button, Card, Select, Space, Table, Tag, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Modal,
+  Select,
+  Space,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import useSWR from "swr";
 import { fetcher } from "@/constants";
+import api from "@/lib/api";
 
 const { Title, Text } = Typography;
 
@@ -20,6 +30,19 @@ export default function page() {
 
   const query = `/rentals?page=${page}&limit=${pageSize}`;
   const { data, isLoading, mutate } = useSWR(query, fetcher);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const clients = `/users/customer`;
   const {
@@ -27,6 +50,29 @@ export default function page() {
     isLoading: isClientsLoading,
     mutate: mutateClients,
   } = useSWR(clients, fetcher);
+
+  const distanceLogs = (id) => {
+    setLoading(true);
+    const query = `/rentals/${id}/distance-logs`;
+    const { data, isLoading } = api.get(query).then((res) => {
+      setLogs(res.data);
+      setLoading(false);
+      showModal();
+    });
+
+    return { distanceLogs: data || [], isDistanceLogsLoading: isLoading };
+  };
+
+  const logColumns = [
+    { title: "ID", dataIndex: "id", key: "id" },
+    { title: "Added Km", dataIndex: "addedKm", key: "addedKm" },
+    {
+      title: "Added At",
+      dataIndex: "addedAt",
+      key: "addedAt",
+      render: (text) => new Date(text).toLocaleString(),
+    },
+  ];
 
   const columns = [
     {
@@ -83,6 +129,14 @@ export default function page() {
         <Tag color={statusColor[value] || "default"}>{value}</Tag>
       ),
     },
+    {
+      title: "Distance Logs",
+      dataIndex: "distanceLogs",
+      key: "distanceLogs",
+      render: (_, record) => (
+        <Button onClick={() => distanceLogs(record.id)}>View</Button>
+      ),
+    },
   ];
 
   return (
@@ -135,6 +189,22 @@ export default function page() {
           }}
         />
       </Card>
+
+      <Modal
+        title="Rental Logs Modal"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Table
+          columns={logColumns}
+          dataSource={logs}
+          loading={loading}
+          rowKey="id"
+          pagination={false}
+        />{" "}
+      </Modal>
     </div>
   );
 }
