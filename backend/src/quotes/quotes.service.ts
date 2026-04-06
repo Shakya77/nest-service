@@ -34,28 +34,6 @@ export class QuotesService {
     private vehiclesRepository: typeof Vehicle,
   ) {}
 
-  private formatQuote(quote: any) {
-    const client = quote.client || {};
-    const vehicle = quote.vehicles || quote.vehicle || {};
-
-    return {
-      id: quote.id,
-      clientId: quote.clientId,
-      clientName: client.name,
-      clientEmail: client.email,
-      vehicleId: quote.vehicleId,
-      vehicleName: vehicle.name,
-      vehicleBasePricePerKm: vehicle.basePricePerKm,
-      vehicleRegistrationNo: vehicle.registrationNo,
-      requestedKm: quote.requestedKm,
-      estimatedPrice: quote.estimatedPrice,
-      bookingDate: quote.bookingDate,
-      pickupLocation: quote.pickupLocation,
-      status: quote.status,
-      createdAt: quote.createdAt,
-    };
-  }
-
   async createForClient(createQuoteDto: CreateQuoteDto, clientId: number) {
     const validVehicle = await this.vehiclesRepository.findOne({
       where: { id: createQuoteDto.vehicleId },
@@ -95,7 +73,7 @@ export class QuotesService {
       order: [['id', 'DESC']],
     });
 
-    return quotes.map((quote) => this.formatQuote(quote as any));
+    return quotes;
   }
 
   async findAllClient(clientId: number) {
@@ -115,7 +93,7 @@ export class QuotesService {
       order: [['id', 'DESC']],
     });
 
-    return quotes.map((quote) => this.formatQuote(quote as any));
+    return quotes;
   }
 
   async findOne(id: number) {
@@ -134,7 +112,7 @@ export class QuotesService {
       ],
     });
 
-    return data ? this.formatQuote(data as any) : null;
+    return data;
   }
 
   async update(id: number, updateQuoteDto: UpdateQuoteDto, clientId: number) {

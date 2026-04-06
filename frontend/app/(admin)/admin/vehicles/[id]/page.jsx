@@ -1,14 +1,19 @@
 "use client";
 
 import { fetcher } from "@/constants";
-import { Card, Space, Table, Typography } from "antd";
+import api from "@/lib/api";
+import { Calendar, Card, Flex, Space, Table, Typography } from "antd";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 const { Title } = Typography;
 
 export default function page() {
   const { id } = useParams();
+  const [disabledDates, setDisabledDates] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const query = `/vehicles/${id}/bookings`;
   const { data: swrData, isLoading, mutate } = useSWR(query, fetcher);
 
@@ -17,6 +22,19 @@ export default function page() {
     vehicleQuery,
     fetcher,
   );
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/vehicles/${id}/disable-dates`);
+      setDisabledDates(response?.data || []);
+    } catch (error) {
+      console.error("Error fetching disable dates:", error);
+      setDisabledDates([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     {
@@ -78,17 +96,41 @@ export default function page() {
     },
   ];
 
-  return (
-    <Card>
-      <Title level={3}>Bookings of the vehicle {vehicleData?.name}</Title>
+  useEffect(() => {
+    fetchData();
+  }, [id]);
 
-      <Table
-        rowKey="id"
-        loading={isLoading}
-        scroll={{ x: "max-content" }}
-        columns={columns}
-        dataSource={swrData || []}
-      />
-    </Card>
+  if (loading) return <p>Loading...</p>;
+
+  const isDateDisabled = (current) => {
+    const formatted = current ? current.format("YYYY-MM-DD") : "";
+    return !!formatted && disabledDates.includes(formatted);
+  };
+
+  return (
+    <Flex vertical gap={6}>
+      <Card>
+        <Title level={3}>Bookings of the vehicle {vehicleData?.name}</Title>
+
+        <Table
+          rowKey="id"
+          loading={isLoading}
+          scroll={{ x: "max-content" }}
+          columns={columns}
+          dataSource={swrData || []}
+        />
+      </Card>
+
+      <Card>
+        <Title level={3}>Calender of the vehicle {vehicleData?.name}</Title>
+
+        <Flex align="center" gap={12}>
+          <span className="w-10 h-10 bg-gray-300 block"></span>
+          <p>Highlited dates are disabled</p>
+        </Flex>
+
+        <Calendar fullscreen={false} showWeek disabledDate={isDateDisabled} />
+      </Card>
+    </Flex>
   );
 }

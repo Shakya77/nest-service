@@ -79,11 +79,7 @@ export default function page() {
 
       try {
         const { data } = await api.get(`/vehicles/${vehicleId}/disable-dates`);
-        setDisabledDates(
-          Array.isArray(data)
-            ? data.map((date) => dayjs(date).format("YYYY-MM-DD"))
-            : [],
-        );
+        setDisabledDates(data);
       } catch (err) {
         message.error(err?.response?.data?.message || err.message);
       }
