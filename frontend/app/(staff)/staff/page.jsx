@@ -119,7 +119,7 @@ export default function page() {
 
   const columns = [
     {
-      title: "SN. No.",
+      title: "SN.",
       dataIndex: "sn",
       render: (value, record, index) => index + 1,
     },

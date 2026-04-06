@@ -37,7 +37,7 @@ export default function page() {
 
   const rentalColumns = [
     {
-      title: "SN. No.",
+      title: "SN.",
       dataIndex: "sn",
       render: (value, record, index) => index + 1,
     },
