@@ -7,9 +7,10 @@ import {
 } from './rentals.providers';
 import { DatabaseModule } from 'src/database/database.module';
 import { StaffDetailsModule } from 'src/staff_details/staff_details.module';
+import { PaymentsModule } from 'src/payments/payments.module';
 
 @Module({
-  imports: [DatabaseModule, StaffDetailsModule],
+  imports: [DatabaseModule, StaffDetailsModule, PaymentsModule],
   controllers: [RentalsController],
   providers: [
     RentalsService,

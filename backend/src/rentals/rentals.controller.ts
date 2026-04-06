@@ -60,9 +60,9 @@ export class RentalsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post(':id/extra')
-  async rentalEnd(@Param('id') id: string, @Request() req) {
-    return await this.rentalsService.rentalEnd(+id, req.user.id);
+  @Post(':id/end')
+  async rentalEnd(@Param('id') id: string, @Request() req, @Body() body: any) {
+    return await this.rentalsService.rentalEnd(+id, req.user.id, body);
   }
 
   @Get(':id')

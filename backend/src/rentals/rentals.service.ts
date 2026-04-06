@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateRentalDto } from './dto/create-rental.dto';
 import { UpdateRentalDto } from './dto/update-rental.dto';
 import {
+  PAYMENTS_REPOSITORY,
   RENTAL_DISTANCE_LOGS_REPOSITORY,
   RENTALS_REPOSITORY,
   STAFF_HOURS_REPOSITORY,
@@ -12,6 +13,7 @@ import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
 import { Quote } from 'src/quotes/entities/quote.entity';
 import { StaffHour } from 'src/staff_details/entities/staff_hour.entity';
 import { RentalDistanceLog } from './entities/rental_distance_log.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 @Injectable()
 export class RentalsService {
@@ -24,6 +26,9 @@ export class RentalsService {
 
     @Inject(RENTAL_DISTANCE_LOGS_REPOSITORY)
     private rentalDistanceLogsRepository: typeof RentalDistanceLog,
+
+    @Inject(PAYMENTS_REPOSITORY)
+    private paymentsRepository: typeof Payment,
   ) {}
 
   async create(createRentalDto: CreateRentalDto) {
@@ -137,7 +142,7 @@ export class RentalsService {
     return rentalDistacneLog;
   }
 
-  async rentalEnd(id: number, userId: number) {
+  async rentalEnd(id: number, userId: number, body: any) {
     const vehiclePrice = (await this.rentalsRepository.findOne({
       where: { id },
       attributes: ['vehicleId'],
@@ -145,6 +150,10 @@ export class RentalsService {
         {
           model: Vehicle,
           attributes: ['basePricePerKm'],
+        },
+        {
+          model: Quote,
+          attributes: ['id', 'bookingDate', 'status', 'vehicleId', 'clientId'],
         },
       ],
     })) as any as Rental;
@@ -183,8 +192,19 @@ export class RentalsService {
           staffId: userId,
           rentalId: id,
         },
-      } as any as StaffHour,
+      },
     );
+
+    const payments = await this.paymentsRepository.create({
+      rentalId: id,
+      amount: totalCost,
+      clientId: vehiclePrice.quote.clientId,
+      paymentDate: new Date(),
+      rewardPointsEarned: Math.floor(totalCost / 100),
+      paidAt: new Date(),
+      paymentMethod: body.paymentMethod || 'cash',
+      rewardPointsUsed: body.rewardPointsUsed || 0,
+    } as any as Payment);
 
     return rentalEnd;
   }
