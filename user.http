@@ -1,0 +1,49 @@
+@baseUrl = http://localhost:3001
+
+### Create Admin User
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "System Admin",
+  "email": "admin@gmail.com",
+  "password": "password123",
+  "role": "admin",
+  "isActive": true,
+  "rewardPoints": 0,
+  "licenseNumber": "N/A",
+  "userId": 0,
+  "ratePerHr": 0
+}
+
+### Create Staff User
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Support Staff",
+  "email": "staff@gmail.com",
+  "password": "password123",
+  "role": "staff",
+  "isActive": true,
+  "rewardPoints": 0,
+  "licenseNumber": "STF-987654",
+  "userId": 0,
+  "ratePerHr": 25
+}
+
+### Create Client/User
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Regular User",
+  "email": "user@gmail.com",
+  "password": "password123",
+  "role": "user",
+  "isActive": true,
+  "rewardPoints": 0,
+  "licenseNumber": "N/A",
+  "userId": 0,
+  "ratePerHr": 0
+}
