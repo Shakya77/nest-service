@@ -9,9 +9,18 @@ import { VehiclesModule } from './vehicles/vehicles.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { PaymentsModule } from './payments/payments.module';
 import { RentalsModule } from './rentals/rentals.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
     DatabaseModule,
     UsersModule,
     AuthModule,

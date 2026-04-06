@@ -152,3 +152,8 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/vehicles/1/bookings
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get the role
+GET {{baseUrl}}/auth/role
+Content-Type: application/json
+Authorization: Bearer {{token}}

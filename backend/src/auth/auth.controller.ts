@@ -5,6 +5,7 @@ import {
   UseGuards,
   Get,
   Request,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -14,8 +15,10 @@ import { UserRole } from './decorators/user-role.decorator';
 import { AllowedRoles } from './decorators/roles.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from 'src/users/entities/user.entity';
+import { LoggingInterceptor } from 'common/interceptors/logging.interceptor';
 
 @Controller('auth')
+@UseInterceptors(LoggingInterceptor)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
