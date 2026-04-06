@@ -9,19 +9,22 @@ const { Title, Text } = Typography;
 export default function page() {
   const [todaysIncome, setTodaysIncome] = useState(null);
   const [topStaff, setTopStaff] = useState(null);
+  const [bookedVehicle, setBookedVehicle] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchStats = async () => {
     setLoading(true);
 
     try {
-      const [paymentsRes, staffRes] = await Promise.all([
+      const [paymentsRes, staffRes, bookedVehicleRes] = await Promise.all([
         api.get("/payments"),
         api.get("/staff/working-staff"),
+        api.get("/vehicles/bookedVehicle"),
       ]);
 
       setTodaysIncome(paymentsRes.data.total);
-      setTopStaff(staffRes.data);
+      setTopStaff(staffRes.data[0]);
+      setBookedVehicle(bookedVehicleRes.data[0]);
     } catch (err) {
       message.error(err?.response?.data?.message || err.message);
     } finally {
@@ -54,18 +57,23 @@ export default function page() {
         <Card loading={loading}>
           <Space orientation="vertical" size={4}>
             <Text type="secondary">Most booked vehicle</Text>
-            <Title level={4} style={{ margin: 0 }}></Title>
-            <Text type="secondary"></Text>
+            <Title level={4} style={{ margin: 0 }}>
+              {bookedVehicle?.vehicle?.name || "N/A"}
+            </Title>
+            <Text type="secondary">
+              Total Bookings:{" "}
+              {Number(bookedVehicle?.totalBookings || 0).toFixed(2)}
+            </Text>
           </Space>
         </Card>
         <Card loading={loading}>
           <Space orientation="vertical" size={4}>
             <Text type="secondary">Most working employee</Text>
             <Title level={4} style={{ margin: 0 }}>
-              {topStaff?.[0]?.staff.name || "N/A"}
+              {topStaff?.staff?.name || "N/A"}
             </Title>
             <Text type="secondary">
-              Total Hours: {Number(topStaff?.[0]?.totalHours || 0).toFixed(2)}
+              Total Hours: {Number(topStaff?.totalHours || 0).toFixed(2)}
             </Text>
           </Space>
         </Card>

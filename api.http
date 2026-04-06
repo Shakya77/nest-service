@@ -139,6 +139,6 @@ Authorization: Bearer {{token}}
 
 ### Get most booked vehicle
 
-GET {{baseUrl}}/staff/working-staff
+GET {{baseUrl}}/vehicles/bookedVehicle
 Content-Type: application/json
 Authorization: Bearer {{token}}

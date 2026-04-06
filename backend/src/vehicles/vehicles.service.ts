@@ -1,7 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
-import { VEHICLE_REPOSITORY } from '../../constants';
+import {
+  QUOTES_REPOSITORY,
+  RENTALS_REPOSITORY,
+  VEHICLE_REPOSITORY,
+} from '../../constants';
 import { Quote, QuoteStatus } from 'src/quotes/entities/quote.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Vehicle } from './entities/vehicle.entity';
@@ -13,7 +17,31 @@ export class VehiclesService {
   constructor(
     @Inject(VEHICLE_REPOSITORY)
     private readonly vehicleRepository: typeof Vehicle,
+    @Inject(RENTALS_REPOSITORY)
+    private readonly rentalRepository: typeof Rental,
+    @Inject(QUOTES_REPOSITORY)
+    private readonly quoteRepository: typeof Quote,
   ) {}
+
+  async findBookedVehicle() {
+    const bookedVehicles = await this.rentalRepository.findAll({
+      attributes: [
+        'vehicleId',
+        [fn('COUNT', col('vehicleId')), 'totalBookings'],
+      ],
+      include: [
+        {
+          model: Vehicle,
+          attributes: ['name', 'basePricePerKm', 'registrationNo'],
+        },
+      ],
+      group: ['vehicleId', 'vehicle.id'],
+      order: [[fn('COUNT', col('vehicleId')), 'DESC']],
+      limit: 1,
+    });
+
+    return bookedVehicles;
+  }
 
   async create(createVehicleDto: CreateVehicleDto) {
     return await this.vehicleRepository.create({
@@ -43,7 +71,7 @@ export class VehiclesService {
   }
 
   async findDisableDates(id: number) {
-    const quotes = await Quote.findAll({
+    const quotes = await this.quoteRepository.findAll({
       attributes: ['bookingDate'],
       where: {
         vehicleId: id,

@@ -22,6 +22,11 @@ import { AllowedRoles } from 'src/auth/decorators/roles.decorator';
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
+  @Get('bookedVehicle')
+  findBookedVehicle() {
+    return this.vehiclesService.findBookedVehicle();
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('available')
   findAvailable() {

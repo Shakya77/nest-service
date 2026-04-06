@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { QuotesService } from './quotes.service';
 import { QuotesController } from './quotes.controller';
 import { quotesProviders } from './quotes.providers';
@@ -8,7 +8,12 @@ import { VehiclesModule } from 'src/vehicles/vehicles.module';
 import { RentalsModule } from 'src/rentals/rentals.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, VehiclesModule, RentalsModule],
+  imports: [
+    DatabaseModule,
+    UsersModule,
+    forwardRef(() => VehiclesModule),
+    RentalsModule,
+  ],  
   controllers: [QuotesController],
   providers: [QuotesService, ...quotesProviders],
   exports: [QuotesService, ...quotesProviders],
