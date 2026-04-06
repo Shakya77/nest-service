@@ -16,8 +16,15 @@ import {
   Typography,
   message,
 } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+
 import api from "@/lib/api";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
@@ -169,22 +176,27 @@ export default function VehiclePage() {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Space>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => openEdit(record)}
-          />
-          <Popconfirm
-            title="Delete this vehicle?"
-            description="This action cannot be undone."
-            okText="Delete"
-            okButtonProps={{ danger: true }}
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button type="text" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+        <>
+          <Space>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => openEdit(record)}
+            />
+            <Popconfirm
+              title="Delete this vehicle?"
+              description="This action cannot be undone."
+              okText="Delete"
+              okButtonProps={{ danger: true }}
+              onConfirm={() => handleDelete(record.id)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+          <Link href={`/admin/vehicles/${record.id}`}>
+            <Button type="text" icon={<EyeOutlined />} />
+          </Link>
+        </>
       ),
     },
   ];

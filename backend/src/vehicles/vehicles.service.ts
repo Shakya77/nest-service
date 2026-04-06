@@ -64,6 +64,7 @@ export class VehiclesService {
 
   async findOne(id: number) {
     const vehicle = await this.vehicleRepository.findOne({ where: { id } });
+
     return vehicle;
   }
 
@@ -151,5 +152,35 @@ export class VehiclesService {
     await vehicle.destroy();
 
     return { message: 'Vehicle removed successfully' };
+  }
+
+  async findRentals(id: number) {
+    const rentals = await this.rentalRepository.findAll({
+      where: { vehicleId: id },
+      attributes: [
+        'id',
+        'status',
+        'scheduleDate',
+        'totalCost',
+        'plannedKm',
+        'extraKm',
+        'totalPrice',
+      ],
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['name', 'email'],
+        },
+        {
+          model: User,
+          as: 'staff',
+          attributes: ['name', 'email'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    return rentals;
   }
 }

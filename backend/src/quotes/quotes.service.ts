@@ -56,10 +56,6 @@ export class QuotesService {
     };
   }
 
-  async create(createQuoteDto: CreateQuoteDto) {
-    throw new BadRequestException('Use createForClient with client id');
-  }
-
   async createForClient(createQuoteDto: CreateQuoteDto, clientId: number) {
     const validVehicle = await this.vehiclesRepository.findOne({
       where: { id: createQuoteDto.vehicleId },

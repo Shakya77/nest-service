@@ -77,24 +77,43 @@ export class Rental extends Model<Rental> {
   @Column({
     type: DataType.DECIMAL(12, 2),
     allowNull: false,
+    get() {
+      const rawValue = this.getDataValue('totalPrice');
+      return parseFloat(rawValue);
+    },
   })
   totalPrice: number;
 
   @Column({
     type: DataType.DECIMAL(12, 2),
     allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('plannedKm');
+      return parseFloat(rawValue);
+    },
   })
   plannedKm: number;
 
   @Column({
     type: DataType.DECIMAL(12, 2),
     allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('extraKm');
+      return parseFloat(rawValue);
+    },
   })
   extraKm: number;
 
   @Column({
     type: DataType.DECIMAL(12, 2),
     allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('totalCost');
+      return parseFloat(rawValue);
+    },
+    set(value: number) {
+      this.setDataValue('totalCost', value);
+    },
   })
   totalCost: number;
 

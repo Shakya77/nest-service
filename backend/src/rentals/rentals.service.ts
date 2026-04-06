@@ -1,6 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateRentalDto } from './dto/create-rental.dto';
-import { UpdateRentalDto } from './dto/update-rental.dto';
 import {
   PAYMENTS_REPOSITORY,
   RENTAL_DISTANCE_LOGS_REPOSITORY,
@@ -156,96 +155,118 @@ export class RentalsService {
   }
 
   async rentalEnd(id: number, userId: number, body: any) {
-    const vehiclePrice = (await this.rentalsRepository.findOne({
-      where: { id },
-      attributes: ['vehicleId'],
-      include: [
-        {
-          model: Vehicle,
-          attributes: ['basePricePerKm'],
-        },
-        {
-          model: Quote,
-          attributes: ['id', 'bookingDate', 'status', 'vehicleId', 'clientId'],
-        },
-      ],
-    })) as any as Rental;
+    const transaction = await this.rentalsRepository.sequelize.transaction();
 
-    const extraKm = await this.rentalDistanceLogsRepository.sum('addedKm', {
-      where: { rentalId: id },
-    });
+    try {
+      const vehiclePrice = (await this.rentalsRepository.findOne({
+        where: { id },
+        attributes: ['vehicleId'],
+        include: [
+          {
+            model: Vehicle,
+            attributes: ['basePricePerKm'],
+          },
+          {
+            model: Quote,
+            attributes: [
+              'id',
+              'bookingDate',
+              'status',
+              'vehicleId',
+              'clientId',
+            ],
+          },
+        ],
+      })) as any as Rental;
 
-    const expectedPrice = await this.rentalsRepository.sum('totalPrice', {
-      where: { id },
-    });
+      const extraKm = await this.rentalDistanceLogsRepository.sum('addedKm', {
+        where: { rentalId: id },
+      });
 
-    const totalCost =
-      expectedPrice + extraKm * vehiclePrice.vehicle.basePricePerKm;
+      const expectedPrice = await this.rentalsRepository.sum('totalPrice', {
+        where: { id },
+      });
 
-    const rentalEnd = await this.staffHoursRepository.findAll({
-      where: {
-        staffId: userId,
-        rentalId: id,
-      },
-    });
+      const totalCost =
+        expectedPrice + extraKm * vehiclePrice.vehicle.basePricePerKm;
 
-    const startTime = rentalEnd[0].startTime;
-    const now = new Date();
-    const totalHours = Math.round(
-      (now.getTime() - startTime.getTime()) / 3600000,
-    );
-
-    await this.staffHoursRepository.update(
-      {
-        endTime: now,
-        totalHours: totalHours,
-      },
-      {
+      const rentalEnd = await this.staffHoursRepository.findAll({
         where: {
           staffId: userId,
           rentalId: id,
         },
-      },
-    );
+      });
 
-    await this.rentalsRepository.update(
-      {
-        status: 'completed',
-        totalPrice: totalCost,
-        extraKm: extraKm,
-      } as any as Rental,
-      {
-        where: {
-          id,
+      const startTime = rentalEnd[0].startTime;
+      const now = new Date();
+      const totalHours = Math.round(
+        (now.getTime() - startTime.getTime()) / 3600000,
+      );
+
+      await this.staffHoursRepository.update(
+        {
+          endTime: now,
+          totalHours: totalHours,
         },
-      },
-    );
-    const rewardPointsEarned = Math.floor(totalCost / 100);
+        {
+          where: {
+            staffId: userId,
+            rentalId: id,
+          },
+          transaction,
+        },
+      );
 
-    const payments = await this.paymentsRepository.create({
-      rentalId: id,
-      amount: totalCost - body.rewardPointsUsed,
-      clientId: vehiclePrice.quote.clientId,
-      paymentDate: new Date(),
-      rewardPointsEarned: rewardPointsEarned,
-      paidAt: new Date(),
-      paymentMethod: body.paymentMethod || 'cash',
-      rewardPointsUsed: body.rewardPointsUsed || 0,
-    } as any as Payment);
+      await this.rentalsRepository.update(
+        {
+          status: 'completed',
+          totalPrice: totalCost,
+          extraKm: extraKm,
+        } as any as Rental,
+        {
+          where: {
+            id,
+          },
+          transaction,
+        },
+      );
+      const rewardPointsEarned = Math.floor(totalCost / 100);
 
-    const user = (await this.usersRepository.findOne({
-      where: { id: vehiclePrice.quote.clientId },
-    })) as any as User;
+      const payments = await this.paymentsRepository.create(
+        {
+          rentalId: id,
+          amount: totalCost - body.rewardPointsUsed,
+          clientId: vehiclePrice.quote.clientId,
+          paymentDate: new Date(),
+          rewardPointsEarned: rewardPointsEarned,
+          paidAt: new Date(),
+          paymentMethod: body.paymentMethod || 'cash',
+          rewardPointsUsed: body.rewardPointsUsed || 0,
+        } as any as Payment,
+        { transaction },
+      );
 
-    await this.usersRepository.update(
-      {
-        rewardPoints:
-          user.rewardPoints + rewardPointsEarned - (body.rewardPointsUsed || 0),
-      } as any as User,
-      { where: { id: vehiclePrice.quote.clientId } },
-    );
+      const user = (await this.usersRepository.findOne({
+        where: { id: vehiclePrice.quote.clientId },
+      })) as any as User;
 
-    return rentalEnd;
+      await this.usersRepository.update(
+        {
+          rewardPoints:
+            user.rewardPoints +
+            rewardPointsEarned -
+            (body.rewardPointsUsed || 0),
+        } as any as User,
+        { where: { id: vehiclePrice.quote.clientId }, transaction },
+      );
+
+      await transaction.commit();
+
+      return rentalEnd;
+    } catch (error) {
+      await transaction.rollback();
+      throw new BadRequestException(error?.message || 'Transaction failed');
+    }
   }
 
   async findAllUser(userId: number, page: number, limit: number) {
@@ -305,14 +326,6 @@ export class RentalsService {
         lastPage: Math.ceil(count / limitNumber),
       },
     };
-  }
-
-  update(id: number, updateRentalDto: UpdateRentalDto) {
-    return `This action updates a #${id} rental`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} rental`;
   }
 
   async findAllStaff(page: number, limit: number, staffId: number) {

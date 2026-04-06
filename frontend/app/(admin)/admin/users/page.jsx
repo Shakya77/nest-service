@@ -28,7 +28,6 @@ export default function page() {
   const [roleFilter, setRoleFilter] = useState(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const query = `/users?page=${page}&limit=${pageSize}${roleFilter ? `&role=${roleFilter}` : ""}`;
   const { data, isLoading, mutate } = useSWR(query, fetcher);
@@ -45,6 +44,12 @@ export default function page() {
   };
 
   const columns = [
+    {
+      title: "SN",
+      dataIndex: "id",
+      key: "id",
+      render: (_, __, index) => index + 1,
+    },
     {
       title: "Name",
       dataIndex: "name",
@@ -76,16 +81,6 @@ export default function page() {
       ),
     },
   ];
-
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
 
   return (
     <div className="flex flex-col gap-6">
