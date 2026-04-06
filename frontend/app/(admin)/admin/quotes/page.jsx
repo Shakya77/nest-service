@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
+  Flex,
   Modal,
   Select,
   Table,
@@ -13,7 +14,6 @@ import {
 } from "antd";
 import api from "@/lib/api";
 import dayjs from "dayjs";
-import { mutate } from "swr";
 
 const { Title, Text } = Typography;
 
@@ -119,8 +119,8 @@ export default function page() {
       key: "clientName",
       render: (_, record) => (
         <div>
-          <div>{record.clientName}</div>
-          <Text type="secondary">{record.clientEmail}</Text>
+          <div>{record.client?.name}</div>
+          <Text type="secondary">{record.client?.email}</Text>
         </div>
       ),
     },
@@ -128,6 +128,12 @@ export default function page() {
       title: "Vehicle",
       dataIndex: "vehicleName",
       key: "vehicleName",
+      render: (_, record) => (
+        <div>
+          <div>{record.vehicles?.name}</div>
+          <Text type="secondary">{record.vehicles?.registrationNo}</Text>
+        </div>
+      ),
     },
     {
       title: "Requested Km",
@@ -173,22 +179,22 @@ export default function page() {
   ];
   console.log(staffOptions);
   return (
-    <div className="flex flex-col gap-6">
-      <Card>
-        <div>
-          <Title level={3} style={{ marginBottom: 4 }}>
-            Quotes
-          </Title>
-          <Text type="secondary">
-            Approve, reject, and track pending quote requests.
-          </Text>
-        </div>
-        <Button onClick={() => fetchQuotes()} className="mt-4">
-          Refresh
-        </Button>
-      </Card>
-
-      <Card>
+    <div>
+      <Card
+        title={
+          <Flex gap={10} align="center">
+            <Title level={3}>Quotes</Title>
+            <Text type="secondary">
+              (Approve, reject, and track pending quote requests.)
+            </Text>
+          </Flex>
+        }
+        extra={
+          <Button onClick={() => fetchQuotes()} className="mt-4">
+            Refresh
+          </Button>
+        }
+      >
         <Table
           rowKey="id"
           loading={loading}

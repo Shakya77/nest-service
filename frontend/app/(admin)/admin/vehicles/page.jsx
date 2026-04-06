@@ -203,24 +203,22 @@ export default function VehiclePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <Space className="w-full items-center justify-between" wrap>
-          <div>
-            <Title level={3} style={{ marginBottom: 4 }}>
-              Vehicles
-            </Title>
+      <Card
+        loading={loading}
+        title={
+          <Space>
+            <Title level={3}>Vehicles</Title>
             <Text type="secondary">
-              Create, update, delete, and toggle vehicle availability.
+              (Create, update, delete, and toggle vehicle availability.)
             </Text>
-          </div>
-
+          </Space>
+        }
+        extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Vehicle
           </Button>
-        </Space>
-      </Card>
-
-      <Card>
+        }
+      >
         <Table
           rowKey="id"
           loading={loading}

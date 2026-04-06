@@ -14,6 +14,7 @@ import { Quote } from 'src/quotes/entities/quote.entity';
 import { StaffHour } from 'src/staff_details/entities/staff_hour.entity';
 import { RentalDistanceLog } from './entities/rental_distance_log.entity';
 import { Payment } from 'src/payments/entities/payment.entity';
+import { UpdateRentalDto } from './dto/update-rental.dto';
 
 @Injectable()
 export class RentalsService {
@@ -33,6 +34,119 @@ export class RentalsService {
     @Inject(USERS_REPOSITORY)
     private usersRepository: typeof User,
   ) {}
+
+  async rentalEnd(id: number, userId: number, body: any) {
+    const transaction = await Rental.sequelize!.transaction();
+    
+    try {
+      const vehiclePrice = (await this.rentalsRepository.findOne({
+        where: { id },
+        attributes: ['vehicleId'],
+        include: [
+          {
+            model: Vehicle,
+            attributes: ['basePricePerKm'],
+          },
+          {
+            model: Quote,
+            attributes: [
+              'id',
+              'bookingDate',
+              'status',
+              'vehicleId',
+              'clientId',
+            ],
+          },
+        ],
+      })) as any as Rental;
+
+      const extraKm = await this.rentalDistanceLogsRepository.sum('addedKm', {
+        where: { rentalId: id },
+      });
+
+      const expectedPrice = await this.rentalsRepository.sum('totalPrice', {
+        where: { id },
+      });
+
+      const totalCost =
+        expectedPrice + extraKm * vehiclePrice.vehicle.basePricePerKm;
+
+      const rentalEnd = await this.staffHoursRepository.findAll({
+        where: {
+          staffId: userId,
+          rentalId: id,
+        },
+      });
+
+      const startTime = rentalEnd[0].startTime;
+      const now = new Date();
+      const totalHours = (now.getTime() - startTime.getTime()) / 3600000;
+
+      await this.staffHoursRepository.update(
+        {
+          endTime: now,
+          totalHours: totalHours,
+        },
+        {
+          where: {
+            staffId: userId,
+            rentalId: id,
+          },
+          transaction,
+        },
+      );
+
+      await this.rentalsRepository.update(
+        {
+          status: 'completed',
+          totalPrice: totalCost,
+          extraKm: extraKm,
+        } as any as Rental,
+        {
+          where: {
+            id,
+          },
+          transaction,
+        },
+      );
+      const rewardPointsEarned = Math.floor(totalCost / 100);
+
+      const payments = await this.paymentsRepository.create(
+        {
+          rentalId: id,
+          amount: totalCost - body.rewardPointsUsed,
+          clientId: vehiclePrice.quote.clientId,
+          paymentDate: new Date(),
+          rewardPointsEarned: rewardPointsEarned,
+          paidAt: new Date(),
+          paymentMethod: body.paymentMethod || 'cash',
+          rewardPointsUsed: body.rewardPointsUsed || 0,
+        } as any as Payment,
+        { transaction },
+      );
+
+      const user = (await this.usersRepository.findOne({
+        where: { id: vehiclePrice.quote.clientId },
+      })) as any as User;
+
+      await this.usersRepository.update(
+        {
+          rewardPoints:
+            user.rewardPoints +
+            rewardPointsEarned -
+            (body.rewardPointsUsed || 0),
+        } as any as User,
+        { where: { id: vehiclePrice.quote.clientId }, transaction },
+      );
+
+      await transaction.commit();
+
+      return rentalEnd;
+    } catch (error) {
+      await transaction.rollback();
+      throw new BadRequestException(error?.message || 'Transaction failed');
+    }
+  }
 
   async create(createRentalDto: CreateRentalDto) {
     const data = await this.rentalsRepository.create(
@@ -152,121 +266,6 @@ export class RentalsService {
     } as any as RentalDistanceLog);
 
     return rentalDistacneLog;
-  }
-
-  async rentalEnd(id: number, userId: number, body: any) {
-    const transaction = await this.rentalsRepository.sequelize.transaction();
-
-    try {
-      const vehiclePrice = (await this.rentalsRepository.findOne({
-        where: { id },
-        attributes: ['vehicleId'],
-        include: [
-          {
-            model: Vehicle,
-            attributes: ['basePricePerKm'],
-          },
-          {
-            model: Quote,
-            attributes: [
-              'id',
-              'bookingDate',
-              'status',
-              'vehicleId',
-              'clientId',
-            ],
-          },
-        ],
-      })) as any as Rental;
-
-      const extraKm = await this.rentalDistanceLogsRepository.sum('addedKm', {
-        where: { rentalId: id },
-      });
-
-      const expectedPrice = await this.rentalsRepository.sum('totalPrice', {
-        where: { id },
-      });
-
-      const totalCost =
-        expectedPrice + extraKm * vehiclePrice.vehicle.basePricePerKm;
-
-      const rentalEnd = await this.staffHoursRepository.findAll({
-        where: {
-          staffId: userId,
-          rentalId: id,
-        },
-      });
-
-      const startTime = rentalEnd[0].startTime;
-      const now = new Date();
-      const totalHours = Math.round(
-        (now.getTime() - startTime.getTime()) / 3600000,
-      );
-
-      await this.staffHoursRepository.update(
-        {
-          endTime: now,
-          totalHours: totalHours,
-        },
-        {
-          where: {
-            staffId: userId,
-            rentalId: id,
-          },
-          transaction,
-        },
-      );
-
-      await this.rentalsRepository.update(
-        {
-          status: 'completed',
-          totalPrice: totalCost,
-          extraKm: extraKm,
-        } as any as Rental,
-        {
-          where: {
-            id,
-          },
-          transaction,
-        },
-      );
-      const rewardPointsEarned = Math.floor(totalCost / 100);
-
-      const payments = await this.paymentsRepository.create(
-        {
-          rentalId: id,
-          amount: totalCost - body.rewardPointsUsed,
-          clientId: vehiclePrice.quote.clientId,
-          paymentDate: new Date(),
-          rewardPointsEarned: rewardPointsEarned,
-          paidAt: new Date(),
-          paymentMethod: body.paymentMethod || 'cash',
-          rewardPointsUsed: body.rewardPointsUsed || 0,
-        } as any as Payment,
-        { transaction },
-      );
-
-      const user = (await this.usersRepository.findOne({
-        where: { id: vehiclePrice.quote.clientId },
-      })) as any as User;
-
-      await this.usersRepository.update(
-        {
-          rewardPoints:
-            user.rewardPoints +
-            rewardPointsEarned -
-            (body.rewardPointsUsed || 0),
-        } as any as User,
-        { where: { id: vehiclePrice.quote.clientId }, transaction },
-      );
-
-      await transaction.commit();
-
-      return rentalEnd;
-    } catch (error) {
-      await transaction.rollback();
-      throw new BadRequestException(error?.message || 'Transaction failed');
-    }
   }
 
   async findAllUser(userId: number, page: number, limit: number) {
@@ -391,4 +390,7 @@ export class RentalsService {
 
     return distanceLogs;
   }
+
+  async update(id: number, updateRentalDto: UpdateRentalDto) {}
+  async remove(id: number) {}
 }

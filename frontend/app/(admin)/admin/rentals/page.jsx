@@ -140,32 +140,38 @@ export default function page() {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <Card variant="borderless">
-        <Space
-          style={{ width: "100%", justifyContent: "space-between" }}
-          align="start"
-        >
-          <div>
-            <Title level={3}>Rentals</Title>
-            <Text type="secondary">
-              Simple rental list with current status.
-            </Text>
-          </div>
-          <Button onClick={() => mutate()}>Refresh</Button>
-        </Space>
-      </Card>
-      <Card variant="borderless">
-        <Select
-          allowClear
-          loading={isClientsLoading}
-          onChange={(value) => {}}
-          options={clientsData?.map((client) => ({
-            label: client.name,
-            value: client.id,
-          }))}
-          placeholder="Filter by user"
-        ></Select>
+    <>
+      <Card
+        variant="borderless"
+        title={
+          <Space
+            style={{ width: "100%", justifyContent: "space-between" }}
+            align="start"
+          >
+            <div>
+              <Title level={3}>Rentals</Title>
+              <Text type="secondary">
+                Simple rental list with current status.
+              </Text>
+            </div>
+          </Space>
+        }
+        extra={<Button onClick={() => mutate()}>Refresh</Button>}
+      >
+        <div className="mb-4">
+          <Select
+            allowClear
+            loading={isClientsLoading}
+            onChange={(value) => {
+              mutate();
+            }}
+            options={clientsData?.map((client) => ({
+              label: client.name,
+              value: client.id,
+            }))}
+            placeholder="Filter by user"
+          ></Select>
+        </div>
 
         <Table
           rowKey="id"
@@ -205,6 +211,6 @@ export default function page() {
           pagination={false}
         />{" "}
       </Modal>
-    </div>
+    </>
   );
 }

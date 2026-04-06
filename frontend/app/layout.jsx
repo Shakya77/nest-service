@@ -30,7 +30,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <Suspense>
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-screen">
+              Loading...
+            </div>
+          }
+        >
           <AuthProvider>{children}</AuthProvider>
         </Suspense>
       </body>

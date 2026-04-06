@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Divider,
+  Flex,
   Form,
   Input,
   Modal,
@@ -169,21 +170,21 @@ export default function page() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <Title level={3} style={{ marginBottom: 4 }}>
-          Staff Profiles
-        </Title>
-
-        <Text type="secondary">
-          Track staff hours worked and estimated income.
-        </Text>
-
-        <Button type="primary" onClick={openModal}>
-          Add Staff
-        </Button>
-      </Card>
-
-      <Card>
+      <Card
+        title={
+          <Space>
+            <Title level={3}>Staff Profiles</Title>
+            <Text type="secondary">
+              (Track staff hours worked and estimated income.)
+            </Text>
+          </Space>
+        }
+        extra={
+          <Button type="primary" onClick={openModal}>
+            Add Staff
+          </Button>
+        }
+      >
         <Table
           rowKey="id"
           scroll={{ x: "max-content" }}

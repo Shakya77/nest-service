@@ -58,7 +58,7 @@ export default function page() {
         {quote ? (
           <Descriptions column={1} bordered>
             <Descriptions.Item label="Vehicle">
-              {quote.vehicleName}
+              {quote.vehicles?.name}
             </Descriptions.Item>
             <Descriptions.Item label="Requested Km">
               {quote.requestedKm}

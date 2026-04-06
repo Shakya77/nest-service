@@ -146,9 +146,22 @@ export default function page() {
 
   const columns = [
     {
+      title: "SN",
+      dataIndex: "id",
+      key: "id",
+      render: (_, __, index) => index + 1,
+    },
+
+    {
       title: "Vehicle",
       dataIndex: "vehicleName",
       key: "vehicleName",
+      render: (_, record) => (
+        <div>
+          <div>{record.vehicles?.name}</div>
+          <Text type="secondary">{record.vehicles?.registrationNo}</Text>
+        </div>
+      ),
     },
     {
       title: "Requested Km",
@@ -211,32 +224,34 @@ export default function page() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={3} style={{ marginBottom: 4 }}>
-              Book a Ride
-            </Title>
-            <Text type="secondary">Create and track your rides.</Text>
-          </Col>
+      <Row>
+        <Col span={24}>
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Title level={3} style={{ marginBottom: 4 }}>
+                Book a Ride
+              </Title>
+              <Text type="secondary">Create and track your rides.</Text>
+            </Col>
 
-          <Col>
-            <Button type="primary" onClick={openCreate}>
-              Create ride
-            </Button>
-          </Col>
-        </Row>
-      </Card>
+            <Col>
+              <Button type="primary" onClick={openCreate}>
+                Create ride
+              </Button>
+            </Col>
+          </Row>
+        </Col>
 
-      <Card>
-        <Table
-          rowKey="id"
-          loading={loading}
-          columns={columns}
-          dataSource={quotes}
-          scroll={{ x: "max-content" }}
-        />
-      </Card>
+        <Col span={24}>
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={columns}
+            dataSource={quotes}
+            scroll={{ x: "max-content" }}
+          />
+        </Col>
+      </Row>
 
       <Ticket />
 
