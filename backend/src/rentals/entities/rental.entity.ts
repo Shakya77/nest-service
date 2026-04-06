@@ -28,6 +28,15 @@ export class Rental extends Model<Rental> {
   })
   id: number;
 
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.INTEGER,
+  })
+  userId: number;
+
+  @BelongsTo(() => User, 'userId')
+  user: User;
+
   @ForeignKey(() => Quote)
   @Column({
     type: DataType.INTEGER,
@@ -54,7 +63,7 @@ export class Rental extends Model<Rental> {
   })
   staffId: number;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, 'staffId')
   staff: User;
 
   @Column({

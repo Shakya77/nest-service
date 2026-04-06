@@ -246,6 +246,7 @@ export class QuotesService {
         await this.rentalsRepository.create(
           {
             quoteId: id,
+            clientId: check.clientId,
             scheduleDate: check.bookingDate,
             totalPrice: check.estimatedPrice,
             plannedKm: check.requestedKm,

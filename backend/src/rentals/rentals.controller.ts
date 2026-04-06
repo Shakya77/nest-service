@@ -65,6 +65,17 @@ export class RentalsController {
     return await this.rentalsService.rentalEnd(+id, req.user.id, body);
   }
 
+  @AllowedRoles(Roles.USER)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('/user')
+  async findAllUser(
+    @Request() req,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return await this.rentalsService.findAllUser(req.user.id, page, limit);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.rentalsService.findOne(+id);

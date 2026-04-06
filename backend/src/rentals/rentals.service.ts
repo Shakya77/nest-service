@@ -195,6 +195,19 @@ export class RentalsService {
       },
     );
 
+    await this.rentalsRepository.update(
+      {
+        status: 'completed',
+        totalPrice: totalCost,
+        extraKm: extraKm,
+      } as any as Rental,
+      {
+        where: {
+          id,
+        },
+      },
+    );
+
     const payments = await this.paymentsRepository.create({
       rentalId: id,
       amount: totalCost,
@@ -207,6 +220,59 @@ export class RentalsService {
     } as any as Payment);
 
     return rentalEnd;
+  }
+
+  async findAllUser(userId: number, page: number, limit: number) {
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 10;
+    const offset = (pageNumber - 1) * limitNumber;
+    const { rows, count } = await this.rentalsRepository.findAndCountAll({
+      attributes: [
+        'id',
+        'status',
+        'scheduleDate',
+        'totalCost',
+        'plannedKm',
+        'vehicleId',
+        'staffId',
+        'extraKm',
+        'totalPrice',
+      ],
+      include: [
+        {
+          model: Quote,
+          attributes: ['id', 'bookingDate', 'status', 'vehicleId'],
+          include: [
+            {
+              model: User,
+              as: 'client',
+              attributes: ['id', 'name'],
+            },
+          ],
+        },
+        {
+          model: Vehicle,
+          attributes: ['id', 'name', 'basePricePerKm', 'registrationNo'],
+        },
+        {
+          model: User,
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+      limit: limitNumber,
+      offset,
+      order: [['createdAt', 'DESC']],
+      distinct: true,
+    });
+
+    return {
+      data: rows,
+      meta: {
+        total: count,
+        page: pageNumber,
+        lastPage: Math.ceil(count / limitNumber),
+      },
+    };
   }
 
   update(id: number, updateRentalDto: UpdateRentalDto) {
