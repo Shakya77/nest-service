@@ -251,40 +251,6 @@ export class RentalsService {
     const offset = (pageNumber - 1) * limitNumber;
 
     const { rows, count } = await this.rentalsRepository.findAndCountAll({
-      where: { userId },
-      attributes: [
-        'id',
-        'status',
-        'scheduleDate',
-        'totalCost',
-        'plannedKm',
-        'vehicleId',
-        'staffId',
-        'extraKm',
-        'totalPrice',
-      ],
-      include: [
-        {
-          model: Quote,
-          attributes: ['id', 'bookingDate', 'status', 'vehicleId'],
-          include: [
-            {
-              model: User,
-              as: 'client',
-              attributes: ['id', 'name', 'email'],
-            },
-          ],
-        },
-        {
-          model: Vehicle,
-          attributes: ['id', 'name', 'basePricePerKm', 'registrationNo'],
-        },
-        {
-          model: User,
-          as: 'user',
-          attributes: ['id', 'name', 'email'],
-        },
-      ],
       limit: limitNumber,
       offset,
       order: [['createdAt', 'DESC']],

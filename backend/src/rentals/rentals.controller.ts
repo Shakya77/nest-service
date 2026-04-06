@@ -65,8 +65,7 @@ export class RentalsController {
     return await this.rentalsService.rentalEnd(+id, req.user.id, body);
   }
 
-  @AllowedRoles(Roles.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get('/user')
   async findAllUser(
     @Request() req,

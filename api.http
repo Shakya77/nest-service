@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3001
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWQiOjMsInJvbGUiOiJ1c2VyIiwic2x1ZyI6InVzZXIiLCJpYXQiOjE3NzU0NDIzMjB9.smABScb86nJw2_vzbNl0oOQNDNmG1G_jdDDU3K6pJFw
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWQiOjMsInJvbGUiOiJ1c2VyIiwic2x1ZyI6InVzZXIiLCJpYXQiOjE3NzU0NDMwNTh9.o6OcJMfALUXpO84TQKeQZ5IjuMH7OnYsX7jgiFrZ3mc
 Content-Type: application/json
 
 {
@@ -127,6 +127,6 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 ### Get all rentals for client
-GET {{baseUrl}}/rentals/client?page=1&limit=10
+GET {{baseUrl}}/rentals/user
 Content-Type: application/json
 Authorization: Bearer {{token}}
