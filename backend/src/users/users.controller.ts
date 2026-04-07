@@ -24,15 +24,15 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  getMe(@Request() req) {
-    return this.usersService.getMe(req.user.id);
+  async getMe(@Request() req) {
+    return await this.usersService.getMe(req.user.id);
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('staff')
-  listStaff() {
-    return this.usersService.listStaff();
+  async listStaff() {
+    return await this.usersService.listStaff();
   }
 
   @Post()
@@ -50,21 +50,21 @@ export class UsersController {
     @Param('role') role: string,
     @Body('isActive') isActive: boolean,
   ) {
-    return this.usersService.changeStatus(+id, role, isActive);
+    return await this.usersService.changeStatus(+id, role, isActive);
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('staff')
   async createStaff(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createStaff(createUserDto);
+    return await this.usersService.createStaff(createUserDto);
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('staff/:id')
   async getStaff(@Param('id') id: string) {
-    return this.usersService.getStaff(+id);
+    return await this.usersService.getStaff(+id);
   }
 
   @AllowedRoles(Roles.ADMIN)
@@ -74,14 +74,14 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.updateStaff(+id, updateUserDto);
+    return await   this.usersService.updateStaff(+id, updateUserDto);
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete('staff/:id')
   async deleteStaff(@Param('id') id: string) {
-    return this.usersService.deleteStaff(+id);
+    return await this.usersService.deleteStaff(+id);
   }
 
   @AllowedRoles(Roles.ADMIN)
@@ -110,19 +110,19 @@ export class UsersController {
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(+id, updateUserDto);
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.usersService.remove(+id);
   }
 
   @Get('/customer')
   async getCustomer() {
-    return this.usersService.findCustomer();
+    return await this.usersService.findCustomer();
   }
 }

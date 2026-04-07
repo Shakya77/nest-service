@@ -27,8 +27,8 @@ export class PaymentsController {
   }
 
   @Get()
-  findAll() {
-    return this.paymentsService.findAll();
+  async findAll() {
+    return await this.paymentsService.findAll();
   }
 
   //   @Get(':id')

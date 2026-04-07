@@ -57,6 +57,7 @@ export class VehiclesController {
     return await this.vehiclesService.findOne(+id);
   }
 
+  @Public()
   @Get(':id/disable-dates')
   async findDisableDates(@Param('id') id: string) {
     return await this.vehiclesService.findDisableDates(+id);

@@ -16,13 +16,13 @@ export class StaffDetailsController {
   constructor(private readonly staffDetailsService: StaffDetailsService) {}
 
   @Post()
-  create(@Body() createStaffDetailDto: CreateStaffDetailDto) {
-    return this.staffDetailsService.create(createStaffDetailDto);
+    async create(@Body() createStaffDetailDto: CreateStaffDetailDto) {
+    return await this.staffDetailsService.create(createStaffDetailDto);
   }
 
   @Get()
-  findAll() {
-    return this.staffDetailsService.findAll();
+  async findAll() {
+    return await this.staffDetailsService.findAll();
   }
 
   @Get('working-staff')
@@ -31,8 +31,8 @@ export class StaffDetailsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.staffDetailsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.staffDetailsService.findOne(+id);
   }
 
   @Patch(':id')

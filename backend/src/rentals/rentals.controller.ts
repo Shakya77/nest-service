@@ -23,8 +23,8 @@ export class RentalsController {
   constructor(private readonly rentalsService: RentalsService) {}
 
   @Post()
-  create(@Body() createRentalDto: CreateRentalDto) {
-    return this.rentalsService.create(createRentalDto);
+  async create(@Body() createRentalDto: CreateRentalDto) {
+    return await this.rentalsService.create(createRentalDto);
   }
 
   @Get()

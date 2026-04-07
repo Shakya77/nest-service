@@ -1,37 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Card, Select, Space, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Calendar, Card, Select, Space, Typography } from "antd";
+import { useState } from "react";
 import Loader from "@/components/Loader";
-import api from "@/lib/api";
+import useSWR, { mutate } from "swr";
+import { fetcher } from "@/constants";
 
 const { Title, Text } = Typography;
 
 export default function Home() {
-  const [vehicles, setVehicles] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
-  const fetch = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get("/vehicles/available");
-      setVehicles(data.map((v) => ({ label: v.name, value: v.id })));
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    data: vehiclesData,
+    error: vehiclesError,
+    isLoading: vehiclesLoading,
+  } = useSWR("/vehicles/available", fetcher);
 
-  useEffect(() => {
-    fetch();
-  }, []);
+  const vehicles =
+    vehiclesData?.map((v) => ({ label: v.name, value: v.id })) || [];
 
-  if (loading) {
+  const {
+    data: disabledDates = [],
+    error: disabledDatesError,
+    isLoading: disabledDatesLoading,
+  } = useSWR(
+    selectedVehicle ? `/vehicles/${selectedVehicle}/disable-dates` : null,
+    fetcher,
+  );
+  if (vehiclesLoading) {
     return <Loader />;
   }
+
+  const isDateDisabled = (current) => {
+    const formatted = current ? current.format("YYYY-MM-DD") : "";
+    return !!formatted && disabledDates.includes(formatted);
+  };
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
@@ -62,8 +67,23 @@ export default function Home() {
           options={vehicles}
           style={{ width: "20%" }}
           value={selectedVehicle}
-          onChange={setSelectedVehicle}
+          allowClear
+          onChange={(value) => setSelectedVehicle(value)}
         />
+        {selectedVehicle && (
+          <>
+            <Calendar
+              fullscreen={false}
+              showWeek
+              disabledDate={isDateDisabled}
+            />
+
+            <Text>
+              Selected Vehicle:{" "}
+              {vehiclesData?.find((v) => v.id === selectedVehicle)?.name}
+            </Text>
+          </>
+        )}
       </div>
     </main>
   );

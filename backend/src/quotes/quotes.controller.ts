@@ -25,51 +25,51 @@ export class QuotesController {
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('admin')
-  findAllAdmin() {
-    return this.quotesService.findAllAdmin();
+  async findAllAdmin() {
+    return await this.quotesService.findAllAdmin();
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('client')
-  findAllClient(@Request() req) {
-    return this.quotesService.findAllClient(req.user.id);
+  async findAllClient(@Request() req) {
+    return await this.quotesService.findAllClient(req.user.id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.quotesService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.quotesService.findOne(+id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Request() req, @Body() createQuoteDto: CreateQuoteDto) {
-    return this.quotesService.createForClient(createQuoteDto, req.user.id);
+  async create(@Request() req, @Body() createQuoteDto: CreateQuoteDto) {
+    return await this.quotesService.createForClient(createQuoteDto, req.user.id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  update(
+  async update(
     @Request() req,
     @Param('id') id: string,
     @Body() updateQuoteDto: UpdateQuoteDto,
   ) {
-    return this.quotesService.update(+id, updateQuoteDto, req.user.id);
+    return await this.quotesService.update(+id, updateQuoteDto, req.user.id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Request() req, @Param('id') id: string) {
-    return this.quotesService.remove(+id, req.user.id);
+  async remove(@Request() req, @Param('id') id: string) {
+    return await this.quotesService.remove(+id, req.user.id);
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':id/status')
-  updateStatus(
+  async updateStatus(
     @Param('id') id: string,
     @Body() { status, staffId }: { status: QuoteStatus; staffId: any },
   ) {
-    return this.quotesService.updateStatus(+id, status, staffId);
+    return await this.quotesService.updateStatus(+id, status, staffId);
   }
 }

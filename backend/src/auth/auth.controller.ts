@@ -37,7 +37,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
-  getProfile(@Request() req, @UserRole() role: string) {
+  async getProfile(@Request() req, @UserRole() role: string) {
     return {
       ...req.user,
       role,
@@ -46,14 +46,14 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('role')
-  getRole(@UserRole() role: string) {
+  async getRole(@UserRole() role: string) {
     return { role };
   }
 
   @AllowedRoles(Roles.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('admin-only')
-  getAdminOnlyData(@Request() req) {
+  async getAdminOnlyData(@Request() req) {
     return { message: 'Admin action allowed', user: req.user };
   }
 }
