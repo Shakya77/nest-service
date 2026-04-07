@@ -13,85 +13,81 @@ import {
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/users/entities/user.entity';
 import { AllowedRoles } from 'src/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
   @Get('/:id/bookings')
-  findRentals(@Param('id') id: string) {
-    return this.vehiclesService.findRentals(+id);
+  async findRentals(@Param('id') id: string) {
+    return await this.vehiclesService.findRentals(+id);
   }
-  
+
   @Get('bookedVehicle')
-  findBookedVehicle() {
-    return this.vehiclesService.findBookedVehicle();
+  async findBookedVehicle() {
+    return await this.vehiclesService.findBookedVehicle();
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('available')
-  findAvailable() {
-    return this.vehiclesService.findAvailable();
+  @Public()
+  async findAvailable() {
+    return await this.vehiclesService.findAvailable();
   }
 
   @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createVehicleDto: CreateVehicleDto) {
-    return this.vehiclesService.create(createVehicleDto);
+  async create(@Body() createVehicleDto: CreateVehicleDto) {
+    return await this.vehiclesService.create(createVehicleDto);
   }
 
   @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'))
   @Get()
-  findAll() {
-    return this.vehiclesService.findAll();
+  async findAll() {
+    return await this.vehiclesService.findAll();
   }
 
   @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.vehiclesService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.vehiclesService.findOne(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(':id/disable-dates')
-  findDisableDates(@Param('id') id: string) {
-    return this.vehiclesService.findDisableDates(+id);
+  async findDisableDates(@Param('id') id: string) {
+    return await this.vehiclesService.findDisableDates(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(':id/records')
-  findRecords(@Param('id') id: string) {
-    return this.vehiclesService.findRecords(+id);
+  async findRecords(@Param('id') id: string) {
+    return await this.vehiclesService.findRecords(+id);
   }
 
   @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
-    return this.vehiclesService.update(+id, updateVehicleDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateVehicleDto: UpdateVehicleDto,
+  ) {
+    return await this.vehiclesService.update(+id, updateVehicleDto);
   }
 
   @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  updateAvailability(
+  async updateAvailability(
     @Param('id') id: string,
     @Body('isAvailable') isAvailable: boolean,
   ) {
-    return this.vehiclesService.updateAvailability(+id, isAvailable);
+    return await this.vehiclesService.updateAvailability(+id, isAvailable);
   }
 
   @AllowedRoles(Roles.ADMIN)
-  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vehiclesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.vehiclesService.remove(+id);
   }
 }

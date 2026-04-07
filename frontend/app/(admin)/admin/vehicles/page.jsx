@@ -202,7 +202,7 @@ export default function VehiclePage() {
   ];
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <Card
         loading={loading}
         title={
@@ -280,6 +280,6 @@ export default function VehiclePage() {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

@@ -4,12 +4,14 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
+  Col,
   Divider,
   Flex,
   Form,
   Input,
   Modal,
   Popconfirm,
+  Row,
   Space,
   Table,
   Tag,
@@ -169,30 +171,29 @@ export default function page() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <Card
-        title={
-          <Space>
-            <Title level={3}>Staff Profiles</Title>
-            <Text type="secondary">
-              (Track staff hours worked and estimated income.)
-            </Text>
-          </Space>
-        }
-        extra={
+    <>
+      <Row gutter={[20, 20]}>
+        <Col span={20} justify="start" align="left">
+          <Title level={3}>Staff Profiles</Title>
+          <Text type="secondary">
+            (Track staff hours worked and estimated income.)
+          </Text>
+        </Col>
+        <Col span={4} justify="end" align="right">
           <Button type="primary" onClick={openModal}>
             Add Staff
           </Button>
-        }
-      >
-        <Table
-          rowKey="id"
-          scroll={{ x: "max-content" }}
-          loading={loading}
-          columns={columns}
-          dataSource={staff}
-        />
-      </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            rowKey="id"
+            scroll={{ x: "max-content" }}
+            loading={loading}
+            columns={columns}
+            dataSource={staff}
+          />
+        </Col>
+      </Row>
 
       <Modal
         title="Crate staff"
@@ -256,6 +257,6 @@ export default function page() {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

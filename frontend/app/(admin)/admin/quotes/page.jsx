@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
+  Col,
   Flex,
   Modal,
+  Row,
   Select,
   Table,
   Tag,
@@ -179,30 +181,30 @@ export default function page() {
   ];
   console.log(staffOptions);
   return (
-    <div>
-      <Card
-        title={
-          <Flex gap={10} align="center">
-            <Title level={3}>Quotes</Title>
-            <Text type="secondary">
-              (Approve, reject, and track pending quote requests.)
-            </Text>
-          </Flex>
-        }
-        extra={
+    <>
+      <Row gutter={[20,20]}>
+        <Col span={20} justify="start" align="left">
+          <Title level={3}>Quotes</Title>
+          <Text type="secondary">
+            (Approve, reject, and track pending quote requests.)
+          </Text>
+        </Col>
+        <Col span={4} justify="end" align="right">
           <Button onClick={() => fetchQuotes()} className="mt-4">
             Refresh
           </Button>
-        }
-      >
-        <Table
-          rowKey="id"
-          loading={loading}
-          scroll={{ x: "max-content" }}
-          columns={columns}
-          dataSource={quotes}
-        />
-      </Card>
+        </Col>
+
+        <Col span={24}>
+          <Table
+            rowKey="id"
+            loading={loading}
+            scroll={{ x: "max-content" }}
+            columns={columns}
+            dataSource={quotes}
+          />
+        </Col>
+      </Row>
 
       <Modal
         title="Assign staff member"
@@ -219,6 +221,6 @@ export default function page() {
           style={{ width: "100%" }}
         />
       </Modal>
-    </div>
+    </>
   );
 }
