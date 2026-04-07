@@ -30,6 +30,7 @@ export class Quote extends Model<Quote> {
   @ForeignKey(() => Vehicle)
   @Column({
     type: DataType.INTEGER,
+    allowNull: false,
   })
   vehicleId: number;
 
@@ -41,6 +42,7 @@ export class Quote extends Model<Quote> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
+    allowNull: false,
   })
   clientId: number;
 
@@ -51,21 +53,25 @@ export class Quote extends Model<Quote> {
 
   @Column({
     type: DataType.DATE,
+    allowNull: false,
   })
   bookingDate: Date;
 
   @Column({
     type: DataType.INTEGER,
+    allowNull: false,
   })
   requestedKm: number;
 
   @Column({
     type: DataType.STRING(120),
+    allowNull: false,
   })
   pickupLocation: string;
 
   @Column({
     type: DataType.DECIMAL(12, 2),
+    allowNull: false,
   })
   estimatedPrice: number;
 

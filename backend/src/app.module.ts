@@ -9,7 +9,8 @@ import { VehiclesModule } from './vehicles/vehicles.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { PaymentsModule } from './payments/payments.module';
 import { RentalsModule } from './rentals/rentals.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       throttlers: [
         {
           ttl: 60000,
-          limit: 10,
+          limit: 100,
         },
       ],
     }),
@@ -31,6 +32,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
     RentalsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import {
-  Button,
+  Col,
+  Row,
   Select,
   Space,
   Switch,
@@ -12,7 +13,6 @@ import {
   message,
 } from "antd";
 import api from "@/lib/api";
-import Card from "antd/es/card/Card";
 import useSWR from "swr";
 import { fetcher } from "@/constants";
 
@@ -83,16 +83,16 @@ export default function page() {
   ];
 
   return (
-    <div className="flex flex-col gap-6">
-      <Card>
+    <Row>
+      <Col span={24}>
         <Title level={3} style={{ marginBottom: 4 }}>
           Users
         </Title>
         <Text type="secondary">Manage staff, admins, and client profiles.</Text>
-      </Card>
+      </Col>
 
-      <Card>
-        <Space orientation="vertical" className="mb-8">
+      <Col span={24} style={{ marginTop: 16 }}>
+        <Space className="mb-8">
           <span>Filter By Role</span>
           <Select
             allowClear
@@ -129,7 +129,7 @@ export default function page() {
             },
           }}
         />
-      </Card>
-    </div>
+      </Col>
+    </Row>
   );
 }
