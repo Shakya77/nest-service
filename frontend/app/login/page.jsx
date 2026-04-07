@@ -7,6 +7,7 @@ import { Button, Card, Divider, Form, Input, Typography, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import api from "@/lib/api";
 import { dashboardForRole, useAuth } from "../context/AuthContext";
+import Loader from "@/components/Loader";
 
 const { Title, Text } = Typography;
 
@@ -45,6 +46,8 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (loading) return <Loader />;
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900">
