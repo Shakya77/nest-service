@@ -88,7 +88,7 @@ export default function LoginPage() {
 
           <Divider style={{ margin: "20px 0" }} />
           <div className="text-center text-sm text-slate-500">
-            New here?{" "}
+            New here?
             <Link className="font-medium" href="/register">
               Create an account
             </Link>

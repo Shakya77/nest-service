@@ -154,3 +154,8 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/auth/role
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### Get the profile
+GET {{baseUrl}}/auth/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}

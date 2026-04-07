@@ -22,7 +22,7 @@ import { LoggingInterceptor } from 'common/interceptors/logging.interceptor';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Post('login')

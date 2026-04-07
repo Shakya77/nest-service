@@ -7,12 +7,8 @@ import {
   Patch,
   Param,
   Delete,
-  Put,
   UseGuards,
   Request,
-  BadRequestException,
-  UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
