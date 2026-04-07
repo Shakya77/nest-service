@@ -1,6 +1,5 @@
 @baseUrl = http://localhost:3001
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWQiOjMsInJvbGUiOiJ1c2VyIiwic2x1ZyI6InVzZXIiLCJpYXQiOjE3NzU0NDMwNTh9.o6OcJMfALUXpO84TQKeQZ5IjuMH7OnYsX7jgiFrZ3mc
-Content-Type: application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlkIjoxLCJyb2xlIjoiYWRtaW4iLCJzbHVnIjoiU3lzdGVtLUFkbWluIiwiaWF0IjoxNzc1NTQ4NzUxfQ.w-l6p0HZcmzMCh57-MvXU_E_RupC1Xz35WXJmS2nOQI
 
 {
   "name": "Bijan",
@@ -14,7 +13,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@gmail.com",
+  "email": "admin@gmail.com",
   "password": "password"
 }
 
@@ -118,8 +117,6 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/rentals
 Content-Type: application/json
 Authorization: Bearer {{token}}
-
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0YWZmQGdtYWlsLmNvbSIsImlkIjoyLCJyb2xlIjoic3RhZmYiLCJzbHVnIjoic3RhZmYiLCJpYXQiOjE3NzU0MDUyNzh9.gkxpFHSpNoj-hPSMYM1FDOp8EqhZvsX9V4T_9UIuhq0
 
 ### Get all rentals for staff
 GET {{baseUrl}}/rentals/staff?page=1&limit=10

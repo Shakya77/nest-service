@@ -92,6 +92,15 @@ export class UsersService {
     const whereCondition = (role as Roles) ? { role } : {};
 
     const { rows, count } = await this.usersRepository.findAndCountAll({
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'isActive',
+        'rewardPoints',
+        'slug',
+      ],
       where: {
         role: { [Op.ne]: Roles.ADMIN },
         ...whereCondition,

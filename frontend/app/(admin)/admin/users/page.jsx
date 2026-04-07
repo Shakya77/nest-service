@@ -14,7 +14,7 @@ import {
 } from "antd";
 import api from "@/lib/api";
 import useSWR from "swr";
-import { fetcher } from "@/constants";
+import { fetcher, Roles } from "@/constants";
 
 const { Title, Text } = Typography;
 
@@ -67,6 +67,16 @@ export default function page() {
       render: (value) => (
         <Tag color={ROLE_COLORS[value] || "default"}>{value}</Tag>
       ),
+    },
+    {
+      title: "Reward Points",
+      dataIndex: "rewardPoints",
+      render: (value, record) => {
+        if (record.role === Roles.USER) {
+          return value;
+        }
+        return "-";
+      },
     },
     {
       title: "Status",
