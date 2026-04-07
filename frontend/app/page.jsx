@@ -6,12 +6,13 @@ import { useState } from "react";
 import Loader from "@/components/Loader";
 import useSWR, { mutate } from "swr";
 import { fetcher } from "@/constants";
+import { useAuth } from "./context/AuthContext";
 
 const { Title, Text } = Typography;
 
 export default function Home() {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-
+  const { user } = useAuth();
   const {
     data: vehiclesData,
     error: vehiclesError,
@@ -37,7 +38,7 @@ export default function Home() {
     const formatted = current ? current.format("YYYY-MM-DD") : "";
     return !!formatted && disabledDates.includes(formatted);
   };
-
+  console.log(user);
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
@@ -52,14 +53,25 @@ export default function Home() {
             <Text type="secondary">
               One place to handle staff, clients, and vehicle workflows.
             </Text>
-            <Space wrap style={{ marginTop: 8 }}>
-              <Link href="/login">
-                <Button type="primary">Sign in</Button>
-              </Link>
-              <Link href="/register">
-                <Button type="default">Register</Button>
-              </Link>
-            </Space>
+            {!user && (
+              <Space wrap style={{ marginTop: 8 }}>
+                <Link href="/login">
+                  <Button type="primary">Sign in</Button>
+                </Link>
+                <Link href="/register">
+                  <Button type="default">Register</Button>
+                </Link>
+              </Space>
+            )}
+
+            {user && (
+              <>
+                <Text type="success">Logged in </Text>
+                <Link href="/client/quotes">
+                  <Button type="primary">Book a Ride</Button>
+                </Link>
+              </>
+            )}
           </Space>
         </Card>
         <Title level={3}>Available Vehicle an there Calender</Title>

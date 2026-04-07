@@ -5,11 +5,11 @@ import { ConsoleLogger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: new ConsoleLogger({
-      colors: false,
-      timestamp: true,
-      json: true,
-    }),
+    // logger: new ConsoleLogger({
+    //   colors: false,
+    //   timestamp: true,
+    //   json: true,
+    // }),
   });
 
   app.enableCors({
@@ -17,7 +17,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  // app.useGlobalInterceptors(new LoggingInterceptor());
 
   await app.listen(process.env.PORT ?? 3001);
 }
