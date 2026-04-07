@@ -5,7 +5,9 @@ import dayjs from "dayjs";
 import {
   Button,
   Card,
+  Col,
   Modal,
+  Row,
   Select,
   Space,
   Table,
@@ -141,60 +143,53 @@ export default function page() {
 
   return (
     <>
-      <Card
-        variant="borderless"
-        title={
-          <Space
-            style={{ width: "100%", justifyContent: "space-between" }}
-            align="start"
-          >
-            <div>
-              <Title level={3}>Rentals</Title>
-              <Text type="secondary">
-                Simple rental list with current status.
-              </Text>
-            </div>
+      <Row gutter={16}>
+        <Col span={20} align="left" justify="start">
+          <Title level={3}>Rentals</Title>
+          <Text type="secondary">Simple rental list with current status.</Text>
+        </Col>
+        <Col span={4} align="right" justify="end">
+          <Button onClick={() => mutate()}>Refresh</Button>
+        </Col>
+        <Col span={24}>
+          <Space className="my-4">
+            <Select
+              allowClear
+              loading={isClientsLoading}
+              onChange={(value) => {
+                mutate();
+              }}
+              options={clientsData?.map((client) => ({
+                label: client.name,
+                value: client.id,
+              }))}
+              placeholder="Filter by user"
+            ></Select>
           </Space>
-        }
-        extra={<Button onClick={() => mutate()}>Refresh</Button>}
-      >
-        <div className="mb-4">
-          <Select
-            allowClear
-            loading={isClientsLoading}
-            onChange={(value) => {
-              mutate();
-            }}
-            options={clientsData?.map((client) => ({
-              label: client.name,
-              value: client.id,
-            }))}
-            placeholder="Filter by user"
-          ></Select>
-        </div>
 
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={data?.data || []}
-          loading={isLoading}
-          scroll={{ x: "max-content" }}
-          pagination={{
-            current: page,
-            pageSize,
-            total: data?.meta?.total || 0,
-            showSizeChanger: true,
-            pageSizeOptions: ["4", "10", "20", "50"],
-            onChange: (newPage, newPageSize) => {
-              setPage(newPage);
-              setPageSize(newPageSize);
-            },
-            showTotal: (total, range) => {
-              return `Total ${total} records | Showing ${range[0]}-${range[1]}`;
-            },
-          }}
-        />
-      </Card>
+          <Table
+            rowKey="id"
+            columns={columns}
+            dataSource={data?.data || []}
+            loading={isLoading}
+            scroll={{ x: "max-content" }}
+            pagination={{
+              current: page,
+              pageSize,
+              total: data?.meta?.total || 0,
+              showSizeChanger: true,
+              pageSizeOptions: ["4", "10", "20", "50"],
+              onChange: (newPage, newPageSize) => {
+                setPage(newPage);
+                setPageSize(newPageSize);
+              },
+              showTotal: (total, range) => {
+                return `Total ${total} records | Showing ${range[0]}-${range[1]}`;
+              },
+            }}
+          />
+        </Col>
+      </Row>
 
       <Modal
         title="Rental Logs Modal"

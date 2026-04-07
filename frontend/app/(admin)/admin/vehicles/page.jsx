@@ -4,11 +4,13 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
+  Col,
   Form,
   Input,
   InputNumber,
   Modal,
   Popconfirm,
+  Row,
   Space,
   Switch,
   Table,
@@ -203,30 +205,28 @@ export default function VehiclePage() {
 
   return (
     <>
-      <Card
-        loading={loading}
-        title={
-          <Space>
-            <Title level={3}>Vehicles</Title>
-            <Text type="secondary">
-              (Create, update, delete, and toggle vehicle availability.)
-            </Text>
-          </Space>
-        }
-        extra={
+      <Row gutter={[20, 20]}>
+        <Col span={20} align="left" justify="start">
+          <Title level={3}>Vehicles</Title>
+          <Text type="secondary">
+            (Create, update, delete, and toggle vehicle availability.)
+          </Text>
+        </Col>
+        <Col span={4} align="right" justify="end">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Vehicle
           </Button>
-        }
-      >
-        <Table
-          rowKey="id"
-          loading={loading}
-          scroll={{ x: "max-content" }}
-          columns={columns}
-          dataSource={vehicles}
-        />
-      </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            rowKey="id"
+            loading={loading}
+            scroll={{ x: "max-content" }}
+            columns={columns}
+            dataSource={vehicles}
+          />
+        </Col>
+      </Row>
 
       <Modal
         title={editingVehicle ? "Edit Vehicle" : "Add Vehicle"}
